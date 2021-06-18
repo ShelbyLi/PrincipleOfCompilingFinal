@@ -1,0 +1,110 @@
+﻿<Project Sdk="Microsoft.NET.Sdk" > 
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+  <FsLex Include="CLex.fsl">
+  <OtherFlags>--module CLex --unicode</OtherFlags>
+</FsLex>
+<FsYacc Include="CPar.fsy">
+    <OtherFlags>--module CPar</OtherFlags>
+</FsYacc>
+    <Compile Include="Absyn.fs" />
+    <Compile Include="Debug.fs" />
+    <Compile Include="CPar.fs" />
+    <Compile Include="CLex.fs" />
+    <Compile Include="Parse.fs" />
+    <Compile Include="Machine.fs" />
+    <Compile Include="Backend.fs" />
+    <Compile Include="Comp.fs" />  
+    <Compile Include="microc.fs" />
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FsLexYacc" Version="10.2.0" />
+  </ItemGroup>
+<ItemGroup>
+
+<!-- <MyItem Include="example\ex1.c" Args ="8"/> -->
+<!-- <MyItem Include="example\ex2.c" /> -->
+<!-- <MyItem Include="example\ex3.c" Args ="8"/> -->
+ <!-- <MyItem Include="example\ex4.c" Args ="8"/>  -->
+<!-- <MyItem Include="example\ex5.c" Args ="8"/> 
+<MyItem Include="example\ex6.c" Args ="8"/>
+<MyItem Include="example\ex7.c" Args =""/>
+<MyItem Include="example\ex8.c" Args =""/>
+<MyItem Include="example\ex9.c" Args ="8"/>
+<MyItem Include="example\ex10.c" Args ="8"/>
+<MyItem Include="example\ex11.c" />
+<MyItem Include="example\ex12.c" /> 
+<MyItem Include="example\ex13.c" />
+<MyItem Include="example\ex14.c" />
+<MyItem Include="example\ex15.c" />
+<MyItem Include="example\ex16.c" />
+<MyItem Include="example\ex17.c" />
+<MyItem Include="example\ex18.c" Args="0 0" />
+<MyItem Include="example\ex19.c" />
+<MyItem Include="example\ex20.c" />
+<MyItem Include="example\ex21.c" />
+<MyItem Include="example\ex22.c" />
+<MyItem Include="example\ex23.c" />
+<MyItem Include="example\ex24.c" />
+<MyItem Include="example\ex25.c" /> -->
+ <!-- <MyItem Include="example\emptymain.c" Args ="8"/> 
+ <MyItem Include="example\global.c" Args ="8"/> 
+ <MyItem Include="example\array.c" Args ="8"/> 
+ <MyItem Include="example\onearg.c" Args ="8"/> 
+ <MyItem Include="example\assign.c" Args ="8"/>  -->
+ <MyItem Include="example\if.c" Args ="8"/> 
+ <!-- <MyItem Include="example\while.c" Args ="8"/>  -->
+ <!-- <MyItem Include="example\pointer.c" Args ="8"/>  -->
+ <!-- <MyItem Include="example\expr.c" Args ="8"/>  -->
+ <!-- <MyItem Include="example\return.c" Args ="8"/>  -->
+ <!-- <MyItem Include="example\return1.c" Args ="8"/>  -->
+ <!-- <MyItem Include="example\function.c" Args ="8"/>  -->
+ <!-- <MyItem Include="example\function1.c" Args ="8"/>  -->
+</ItemGroup>
+
+
+<Target Name="ccrun">
+<Exec Command="
+echo -----------compile------------
+dotnet run -p ./microc.fsproj -g %(MyItem.RelativeDir)%(MyItem.FileName).c
+echo -------------run svm-----------
+machine.exe %(MyItem.RelativeDir)%(MyItem.FileName).out %(MyItem.Args)
+echo %13
+rem echo -------------run svm trace-----
+rem machine.exe -trace %(MyItem.RelativeDir)%(MyItem.FileName).out  %(MyItem.Args)"/>
+
+</Target>
+
+<Target Name="ccrunx86">
+<Exec Command="
+echo -----------compile------------
+dotnet run -p ./microc.fsproj  %(MyItem.RelativeDir)%(MyItem.FileName).c
+echo -------assemble and link-------
+nasm -f win64 -o %(MyItem.RelativeDir)%(MyItem.FileName).o %(MyItem.RelativeDir)%(MyItem.FileName).asm
+rem nasm -f elf64 -o %(MyItem.RelativeDir)%(MyItem.FileName).o %(MyItem.RelativeDir)%(MyItem.FileName).asm
+gcc -c driver.c
+gcc -g -o %(MyItem.RelativeDir)%(MyItem.FileName).exe %(MyItem.RelativeDir)%(MyItem.FileName).o driver.o
+
+echo -------------run x86-----------
+%(MyItem.RelativeDir)%(MyItem.FileName).exe  %(MyItem.Args) "/> 
+</Target>
+<ItemGroup>
+<CleanDir Include="example\*.c"/>
+</ItemGroup>
+
+<Target Name="cclean">
+<Exec Command="
+echo -----------clean------------
+
+del %(CleanDir.RelativeDir)*.ins %(CleanDir.RelativeDir)*.insx86 %(CleanDir.RelativeDir)*.out %(CleanDir.RelativeDir)*.asm %(CleanDir.RelativeDir)*.o %(CleanDir.RelativeDir)*.obj %(CleanDir.RelativeDir)*.exe
+
+"/> 
+</Target>
+</Project>

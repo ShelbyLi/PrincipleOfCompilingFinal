@@ -1,0 +1,67 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+<PropertyGroup>
+  <OutputType>Exe</OutputType>
+  <TargetFramework>net5.0</TargetFramework>
+</PropertyGroup>
+
+<ItemGroup>
+
+<FsLex Include="CLex.fsl">
+<OtherFlags>--module CLex --unicode</OtherFlags>
+</FsLex>
+<FsYacc Include="CPar.fsy">
+  <OtherFlags>--module CPar</OtherFlags>
+</FsYacc>
+
+ 
+<Compile Include="Absyn.fs" />
+<Compile Include="Debug.fs" />
+<Compile Include="CPar.fs" />
+<Compile Include="CLex.fs" />
+<Compile Include="Parse.fs" />
+<Compile Include="Machine.fs" />
+<Compile Include="Interp.fs" />
+<Compile Include="interpc.fs" />
+</ItemGroup>
+
+<ItemGroup>
+  <PackageReference Include="FsLexYacc" Version="10.2.0" />
+</ItemGroup>
+<ItemGroup>
+<!-- <MyItem Include="ex1.c" Args ="8"/> -->
+<!-- <MyItem Include="ex2.c" /> -->
+<!-- <MyItem Include="ex3.c" Args ="8"/> -->
+<MyItem Include="ex4.c" Args ="8"/>
+<!-- <MyItem Include="ex5.c" Args ="8"/> -->
+<!-- <MyItem Include="ex6.c" Args ="8"/> -->
+<!-- <MyItem Include="ex7.c" Args =""/>
+<MyItem Include="ex8.c" Args =""/>
+<MyItem Include="ex9.c" Args ="8"/>
+<MyItem Include="ex10.c" Args ="8"/>
+<MyItem Include="ex11.c" />
+<MyItem Include="ex12.c" /> 
+<MyItem Include="ex13.c" />
+<MyItem Include="ex14.c" />
+<MyItem Include="ex15.c" />
+<MyItem Include="ex16.c" />
+<MyItem Include="ex17.c" />
+<MyItem Include="ex18.c" Args="0 0" />
+<MyItem Include="ex19.c" />
+<MyItem Include="ex20.c" />
+<MyItem Include="ex21.c" />
+<MyItem Include="ex22.c" />
+<MyItem Include="ex23.c" />
+<MyItem Include="ex24.c" />
+<MyItem Include="ex25.c" /> -->
+</ItemGroup>
+
+
+<Target Name="ccrun"> 
+<Exec Command="
+echo -----------interprete------------
+dotnet run -p interpc.fsproj -g %(MyItem.FileName).c %(MyItem.Args)"
+/>
+
+</Target>
+</Project>

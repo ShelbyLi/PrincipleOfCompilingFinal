@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "cgEtu6joLbAFMu8alCQNxwLierAFX6zmyXf+deV5whLsw38SnNK//sYuphrpca5F2pg015KnPFxyNPXZUv5uhA==",
+  "success": true,
+  "projectFilePath": "f:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\interpc.fsproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Shelby\\.nuget\\packages\\fsharp.core\\5.0.0\\fsharp.core.5.0.0.nupkg.sha512",
+    "C:\\Users\\Shelby\\.nuget\\packages\\fslexyacc\\10.2.0\\fslexyacc.10.2.0.nupkg.sha512",
+    "C:\\Users\\Shelby\\.nuget\\packages\\fslexyacc.runtime\\10.2.0\\fslexyacc.runtime.10.2.0.nupkg.sha512"
+  ],
+  "logs": []
+}
