@@ -283,6 +283,14 @@ and stmtordec stmtordec locEnv gloEnv store =
 
 and eval e locEnv gloEnv store : int * store =
     match e with
+    | PreInc acc -> 
+        let (loc, store1) = access acc locEnv gloEnv store
+        let tmp = getSto store1 loc
+        (tmp + 1, setSto store1 loc (tmp + 1)) 
+    | PreDec acc -> 
+        let (loc, store1) = access acc locEnv gloEnv store
+        let tmp = getSto store1 loc
+        (tmp - 1, setSto store1 loc (tmp - 1)) 
     | Access acc ->
         let (loc, store1) = access acc locEnv gloEnv store
         (getSto store1 loc, store1)
@@ -327,6 +335,10 @@ and eval e locEnv gloEnv store : int * store =
             | _ -> failwith ("unknown primitive " + ope)
 
         (res, store2)
+    | Prim3 (e1, e2, e3) ->
+        let (v, store1) = eval e1 locEnv gloEnv store  // 求条件的值
+        if v<>0 then eval e2 locEnv gloEnv store1  // true执行e2
+                else eval e3 locEnv gloEnv store1  // false执行e3
     | Andalso (e1, e2) ->
         let (i1, store1) as res = eval e1 locEnv gloEnv store
 

@@ -1,0 +1,21 @@
+LDARGS 1
+CALL (1, "L1_main")
+STOP
+FLabel (1, "L1_main")
+GETBP
+OFFSET 0
+ADD
+LDI
+CSTI 8
+EQ
+IFZERO "L2"
+CSTI 1
+PRINTI
+GOTO "L3"
+Label "L2"
+CSTI 0
+PRINTI
+Label "L3"
+INCSP -1
+INCSP 0
+RET 0

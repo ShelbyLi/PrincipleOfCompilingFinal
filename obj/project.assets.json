@@ -206,11 +206,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "f:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\interpc.fsproj",
-      "projectName": "interpc",
-      "projectPath": "f:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\interpc.fsproj",
+      "projectUniqueName": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\microc.fsproj",
+      "projectName": "microc",
+      "projectPath": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\microc.fsproj",
       "packagesPath": "C:\\Users\\Shelby\\.nuget\\packages\\",
-      "outputPath": "f:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\obj\\",
+      "outputPath": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\Shelby\\AppData\\Roaming\\NuGet\\NuGet.Config"
