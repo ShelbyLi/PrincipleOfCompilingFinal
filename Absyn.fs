@@ -23,11 +23,14 @@ and expr =                           // 表达式，右值
   | CstI of int                      (* Constant                    *)
   | Prim1 of string * expr           (* Unary primitive operator    *)
   | Prim2 of string * expr * expr    (* Binary primitive operator   *)
+  | Prim3 of expr * expr * expr      (* 三目运算 e1 ? e2 : e3 *)
   | Andalso of expr * expr           (* Sequential and              *)
   | Orelse of expr * expr            (* Sequential or               *)
   | Call of string * expr list       (* Function call f(...)        *)
-  | PreInc of access                  (*++x or ++a[i]*)
-  | PreDec of access                  (*--x or --a[i]*)
+  | PreInc of access                 (* 自增 ++x or ++a[i]*)
+  | PreDec of access                 (* 自减--x or --a[i]*)
+  // | NextInc of access                  (*x++ or a[i]--*)
+  // | NextDec of access                  (*x-- or a[i]--*)
                                                                    
 and access =                         //左值，存储的位置                                            
   | AccVar of string                 (* Variable access        x    *) 
