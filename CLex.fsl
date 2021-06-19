@@ -70,12 +70,17 @@ rule Token = parse          // 每个 规则rule 会生成为一个函数，函�
   | '/'             { DIV } 
   | '%'             { MOD }                     
   | '='             { ASSIGN } 
+  | "+="            { PLUSASSIGN }
+  | "-="            { MINUSASSIGN }
+  | "*="            { TIMESASSIGN }
+  | "/="            { DIVASSIGN }
+  | "%="            { MODASSIGN }
   | "=="            { EQ } 
   | "!="            { NE }
   | '>'             { GT }
   | '<'             { LT }
-  | "++"            { PREINC }
-  | "--"            { PREDEC }
+  | "++"            { SELFINC }
+  | "--"            { SELFDEC }
   | ">="            { GE }
   | "<="            { LE }
   | "||"            { SEQOR }                     

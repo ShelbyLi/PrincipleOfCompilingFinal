@@ -14,6 +14,11 @@ type token =
   | AMP
   | QUES
   | COLON
+  | PLUSASSIGN
+  | MINUSASSIGN
+  | TIMESASSIGN
+  | DIVASSIGN
+  | MODASSIGN
   | NOT
   | SEQOR
   | SEQAND
@@ -23,8 +28,8 @@ type token =
   | LT
   | GE
   | LE
-  | PREINC
-  | PREDEC
+  | SELFINC
+  | SELFDEC
   | PLUS
   | MINUS
   | TIMES
@@ -59,6 +64,11 @@ type tokenId =
     | TOKEN_AMP
     | TOKEN_QUES
     | TOKEN_COLON
+    | TOKEN_PLUSASSIGN
+    | TOKEN_MINUSASSIGN
+    | TOKEN_TIMESASSIGN
+    | TOKEN_DIVASSIGN
+    | TOKEN_MODASSIGN
     | TOKEN_NOT
     | TOKEN_SEQOR
     | TOKEN_SEQAND
@@ -68,8 +78,8 @@ type tokenId =
     | TOKEN_LT
     | TOKEN_GE
     | TOKEN_LE
-    | TOKEN_PREINC
-    | TOKEN_PREDEC
+    | TOKEN_SELFINC
+    | TOKEN_SELFDEC
     | TOKEN_PLUS
     | TOKEN_MINUS
     | TOKEN_TIMES

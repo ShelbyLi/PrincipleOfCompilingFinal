@@ -306,6 +306,14 @@ and eval e locEnv gloEnv store : int * store =
         let (loc, store1) = access acc locEnv gloEnv store
         let tmp = getSto store1 loc
         (tmp - 1, setSto store1 loc (tmp - 1)) 
+    | NextInc acc ->
+        let (loc, store1) = access acc locEnv gloEnv store
+        let tmp = getSto store1 loc
+        (tmp, setSto store1 loc (tmp + 1))  // 先返回值 再加
+    | NextDec acc -> 
+        let (loc, store1) = access acc locEnv gloEnv store
+        let tmp = getSto store1 loc
+        (tmp, setSto store1 loc (tmp - 1))
     | Access acc ->
         let (loc, store1) = access acc locEnv gloEnv store
         (getSto store1 loc, store1)
@@ -313,6 +321,44 @@ and eval e locEnv gloEnv store : int * store =
         let (loc, store1) = access acc locEnv gloEnv store
         let (res, store2) = eval e locEnv gloEnv store1
         (res, setSto store2 loc res)
+    // | PlusAssign(acc, e) ->
+    //     let (loc, store1) = access acc locEnv gloEnv store
+    //     let tmp = getSto store1 loc
+    //     let (res, store2) = eval e locEnv gloEnv store1
+    //     (tmp + res, setSto store2 loc (tmp+res))
+    // | MinusAssign(acc, e) ->
+    //     let (loc, store1) = access acc locEnv gloEnv store
+    //     let tmp = getSto store1 loc
+    //     let (res, store2) = eval e locEnv gloEnv store1
+    //     (tmp - res, setSto store2 loc (tmp-res))
+    // | TimesAssign(acc, e) ->
+    //     let (loc, store1) = access acc locEnv gloEnv store
+    //     let tmp = getSto store1 loc
+    //     let (res, store2) = eval e locEnv gloEnv store1
+    //     (tmp * res, setSto store2 loc (tmp*res))
+    // | DivAssign(acc, e) ->
+    //     let (loc, store1) = access acc locEnv gloEnv store
+    //     let tmp = getSto store1 loc
+    //     let (res, store2) = eval e locEnv gloEnv store1
+    //     (tmp / res, setSto store2 loc (tmp/res))
+    // | ModAssign(acc, e) ->
+    //     let (loc, store1) = access acc locEnv gloEnv store
+    //     let tmp = getSto store1 loc
+    //     let (res, store2) = eval e locEnv gloEnv store1
+    //     (tmp % res, setSto store2 loc (tmp%res))
+    | OpAssign (op, acc, e) ->
+        let (loc, store1) = access acc locEnv gloEnv store
+        let tmp = getSto store1 loc
+        let (res, store2) = eval e locEnv gloEnv store1
+        let resValue =
+            match op with
+            | "+" -> tmp + res
+            | "-" -> tmp - res
+            | "*" -> tmp * res
+            | "/" -> tmp / res
+            | "%" -> tmp % res
+            | _ -> failwith ("unknown primitive " + op)
+        (resValue, setSto store2 loc resValue)
     | CstI i -> (i, store)
     | Addr acc -> access acc locEnv gloEnv store
     | Prim1 (ope, e1) ->

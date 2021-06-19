@@ -19,6 +19,12 @@ type typ =
 and expr =                           // 表达式，右值                                                
   | Access of access                 (* x    or  *p    or  a[e]     *) //访问左值（右值）
   | Assign of access * expr          (* x=e  or  *p=e  or  a[e]=e   *)
+  // | PlusAssign of access * expr      (* x+=e or  *p+=e or  a[e]+=e  *)
+  // | MinusAssign of access * expr     (* x-=e or  *p-=e or  a[e]-=e  *)
+  // | TimesAssign of access * expr     (* x*=e or  *p*=e or  a[e]*=e  *)
+  // | DivAssign of access * expr       (* x/=e or  *p/=e or  a[e]/=e  *)
+  // | ModAssign of access * expr       (* x%=e or  *p%=e or  a[e]%=e  *)
+  | OpAssign of string * access * expr
   | Addr of access                   (* &x   or  &*p   or  &a[e]    *)
   | CstI of int                      (* Constant                    *)
   | Prim1 of string * expr           (* Unary primitive operator    *)
@@ -29,8 +35,8 @@ and expr =                           // 表达式，右值
   | Call of string * expr list       (* Function call f(...)        *)
   | PreInc of access                 (* 自增 ++x or ++a[i]*)
   | PreDec of access                 (* 自减--x or --a[i]*)
-  // | NextInc of access                  (*x++ or a[i]--*)
-  // | NextDec of access                  (*x-- or a[i]--*)
+  | NextInc of access                  (*x++ or a[i]--*)
+  | NextDec of access                  (*x-- or a[i]--*)
                                                                    
 and access =                         //左值，存储的位置                                            
   | AccVar of string                 (* Variable access        x    *) 

@@ -1,10 +1,17 @@
-// micro-C example 3
-
 void main(int n) { 
-  int i; 
-  i=0; 
-  while (i < n) { 
-    print i; 
-    ++i;
-  } 
+  print n;
+  print ++n;
+  print n;
+
+  print n;
+  print --n;
+  print n;
+
+  print n;
+  print n++;
+  print n;
+
+  print n;
+  print n--;
+  print n;
 }
