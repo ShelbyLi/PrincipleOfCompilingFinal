@@ -254,6 +254,21 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
                 store2 //退出循环返回 环境store2
 
         loop store
+    | For (e1, e2, e3, body) ->
+        let (v1, store1) = eval e1 locEnv gloEnv store  // 计算e1
+        let rec loop store1 =
+            //求值 循环条件,注意变更环境 store
+            let (v2, store2) = eval e2 locEnv gloEnv store1
+            // 继续循环
+            if v2 <> 0 then
+                let store3 = exec body locEnv gloEnv store2
+                let (v3, store4) = eval e3 locEnv gloEnv store3
+                loop store4
+            else
+                store2 //退出循环返回 环境store2
+
+        loop store1
+    
 
     | Expr e ->
         // _ 表示丢弃e的值,返回 变更后的环境store1
