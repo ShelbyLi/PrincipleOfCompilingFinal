@@ -40,5 +40,6 @@ ADD
 LDI
 LT
 IFNZRO "L2"
+Label "L4"
 INCSP -1
 RET 0

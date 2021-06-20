@@ -101,6 +101,83 @@ L2:
 	pop rax
 	mov rax,[rax]
 	push rax
+	;CSTI 1
+	push 1
+	;EQ
+	pop rax
+	pop r10
+	cmp rax, r10
+	jne .Lasm0
+	push 1
+	jmp .Lasm1
+.Lasm0:
+	push 0
+.Lasm1:
+	;IFZERO L5
+	pop rax
+	cmp rax,0
+	je L5
+	;GETBP
+	push rbp
+	;OFFSET 1
+	push -8
+	;ADD
+	pop rax
+	pop r10
+	add rax, r10
+	push rax
+	;GETBP
+	push rbp
+	;OFFSET 1
+	push -8
+	;ADD
+	pop rax
+	pop r10
+	add rax, r10
+	push rax
+	;LDI
+	pop rax
+	mov rax,[rax]
+	push rax
+	;CSTI 1
+	push 1
+	;ADD
+	pop rax
+	pop r10
+	add rax, r10
+	push rax
+	;STI
+	pop r10
+	pop rax
+	mov [rax],r10
+	push r10
+	;INCSP -1
+	lea rsp, [rsp-8*(-1)]
+	;GOTO L3
+	jmp L3
+	;INCSP 0
+	lea rsp, [rsp-8*(0)]
+	;GOTO L6
+	jmp L6
+	
+L5:
+	;INCSP 0
+	lea rsp, [rsp-8*(0)]
+	
+L6:
+	;GETBP
+	push rbp
+	;OFFSET 1
+	push -8
+	;ADD
+	pop rax
+	pop r10
+	add rax, r10
+	push rax
+	;LDI
+	pop rax
+	mov rax,[rax]
+	push rax
 	;PRINTI
 	pop rcx
 	push rcx
@@ -162,29 +239,18 @@ L3:
 	pop rax
 	mov rax,[rax]
 	push rax
-	;GETBP
-	push rbp
-	;OFFSET 0
-	push -0
-	;ADD
-	pop rax
-	pop r10
-	add rax, r10
-	push rax
-	;LDI
-	pop rax
-	mov rax,[rax]
-	push rax
+	;CSTI 3
+	push 3
 	;LT
 	pop rax
 	pop r10
 	cmp r10, rax
-	jl .Lasm0
+	jl .Lasm2
 	push 0
-	jmp .Lasm1
-.Lasm0:
+	jmp .Lasm3
+.Lasm2:
 	push 1
-.Lasm1:
+.Lasm3:
 	;IFNZRO L2
 	pop rax
 	cmp rax,0

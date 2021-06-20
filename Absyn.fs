@@ -53,6 +53,8 @@ and stmt =
   | While of expr * stmt             (* While loop                  *)
   | For of expr * expr * expr * stmt (* For循环 *)
   | DoWhile of stmt * expr           (* dowhile 循环*)
+  | Break
+  | Continue
   | Expr of expr                     (* Expression statement   e;   *)
   | Return of expr option            (* Return from method          *)
   | Block of stmtordec list          (* Block: grouping and scope   *)

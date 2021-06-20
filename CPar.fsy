@@ -17,7 +17,7 @@ let nl = CstI 10 //  \n 的 ASCII 码
 %token <int> CSTINT CSTBOOL  // <int> 是词元的语义值类型
 %token <string> CSTSTRING NAME
 %token <char> CSTCHAR
-%token CHAR ELSE IF INT NULL PRINT PRINTLN PRINTF RETURN VOID WHILE FOR DO SWITCH CASE DEFAULT
+%token CHAR ELSE IF INT NULL PRINT PRINTLN PRINTF RETURN VOID WHILE FOR DO SWITCH CASE DEFAULT BREAK CONTINUE
 %token PLUS MINUS TIMES DIV MOD
 %token SELFINC SELFDEC  // 自增自减
 %token EQ NE GT LT GE LE
@@ -143,6 +143,10 @@ StmtM:  /* No unbalanced if-else */
   | WHILE LPAR Expr RPAR StmtM          { While($3, $5)        }
   | FOR LPAR Expr SEMI Expr SEMI Expr RPAR StmtM  { For($3, $5, $7, $9) }
   | DO StmtM WHILE LPAR Expr RPAR SEMI  { DoWhile($2, $5)       }
+  | BREAK SEMI                          { Break }
+  | CONTINUE SEMI                       { Continue }
+  // | BREAK SEMI                          { JumpOut "break" }
+  // | CONTINUE SEMI                       { JumpOut "continue" }
 ;
 
 StmtU:
