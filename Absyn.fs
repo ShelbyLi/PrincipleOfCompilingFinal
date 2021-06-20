@@ -45,6 +45,9 @@ and access =                         //左值，存储的位置
                                                                    
 and stmt =                                                         
   | If of expr * stmt * stmt         (* Conditional                 *)
+  | Switch of expr * caseStmt list       (* Switch case语句 case有多个 因此是个list*)
+  // | Case of expr * stmt              (* Case  需要条件和要执行的语句*)
+  // | Default of stmt                  (* Switch case 缺省语句 *)
   | While of expr * stmt             (* While loop                  *)
   | For of expr * expr * expr * stmt (* For循环 *)
   | DoWhile of stmt * expr           (* dowhile 循环*)
@@ -52,6 +55,9 @@ and stmt =
   | Return of expr option            (* Return from method          *)
   | Block of stmtordec list          (* Block: grouping and scope   *)
   // 语句块内部，可以是变量声明 或语句的列表                                                              
+and caseStmt = 
+  | Case of expr * stmt
+  | Default of stmt
 
 and stmtordec =                                                    
   | Dec of typ * string              (* Local variable declaration  *)

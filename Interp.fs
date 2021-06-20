@@ -240,6 +240,41 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
             exec stmt1 locEnv gloEnv store1 //True分支
         else
             exec stmt2 locEnv gloEnv store1 //False分支
+    // | Switch (e, body) ->
+    //     let (v, store1) = eval e locEnv gloEnv store
+    //     // 定义辅助函数 pickCase
+    //     let rec pickCase caseList =
+    //         match caseList with
+    //         | Case (e1, body1):: tail -> 
+    //             let (caseV, caseStore) = eval e1 locEnv gloEnv store1
+    //             if caseV <> v then
+    //                 pickCase tail
+    //             else  // 执行case的body
+    //                 exec body1 locEnv gloEnv caseStore
+    //         | [] -> store1
+    //         | Default body1 :: tail->
+    //             exec body1 locEnv gloEnv store1
+    //         | _ -> failwith ("unknown grammar")
+    //     pickCase body
+    | Switch (e, body) ->
+        let (v, store1) = eval e locEnv gloEnv store
+        // 定义辅助函数 pickCase
+        let rec pickCase caseList =
+            match caseList with
+            | Case (e1, body1):: tail -> 
+                let (caseV, caseStore) = eval e1 locEnv gloEnv store1
+                if caseV <> v then
+                    pickCase tail
+                else  // 执行case的body
+                    exec body1 locEnv gloEnv caseStore
+            | Default body1 :: tail->
+                exec body1 locEnv gloEnv store1
+            | [] -> store1
+            // | _ -> failwith ("unknown grammar")
+            
+        pickCase body
+    // | Case (e, body) -> exec body locEnv gloEnv store
+    // | Default body -> exec body locEnv gloEnv store
 
     | While (e, body) ->
 
