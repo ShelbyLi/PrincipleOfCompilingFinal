@@ -190,7 +190,7 @@ let rec cStmt stmt (varEnv: VarEnv) (funEnv: FunEnv) : instr list =
           @ cStmt body varEnv funEnv
             @ [ Label labtest ]
               @ cExpr e varEnv funEnv @ [ IFNZRO labbegin ]
-              
+
     | Expr e -> cExpr e varEnv funEnv @ [ INCSP -1 ]
     | Block stmts ->
 
@@ -235,6 +235,9 @@ and cExpr (e: expr) (varEnv: VarEnv) (funEnv: FunEnv) : instr list =
         cAccess acc varEnv funEnv
         @ cExpr e varEnv funEnv @ [ STI ]
     | CstI i -> [ CSTI i ]
+    | CstC c -> 
+        let c = (int c)
+        [ CSTI c ]
     | Addr acc -> cAccess acc varEnv funEnv
     | Prim1 (ope, e1) ->
         cExpr e1 varEnv funEnv

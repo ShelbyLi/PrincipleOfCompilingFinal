@@ -27,6 +27,7 @@ and expr =                           // 表达式，右值
   | OpAssign of string * access * expr
   | Addr of access                   (* &x   or  &*p   or  &a[e]    *)
   | CstI of int                      (* Constant                    *)
+  | CstC of char                     (* char类型  *)
   | Prim1 of string * expr           (* Unary primitive operator    *)
   | Prim2 of string * expr * expr    (* Binary primitive operator   *)
   | Prim3 of expr * expr * expr      (* 三目运算 e1 ? e2 : e3 *)

@@ -407,6 +407,7 @@ and eval e locEnv gloEnv store : int * store =
             | _ -> failwith ("unknown primitive " + op)
         (resValue, setSto store2 loc resValue)
     | CstI i -> (i, store)
+    | CstC c -> ((int c), store)
     | Addr acc -> access acc locEnv gloEnv store
     | Prim1 (ope, e1) ->
         let (i1, store1) = eval e1 locEnv gloEnv store

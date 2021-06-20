@@ -51,6 +51,7 @@ type token =
   | SWITCH
   | CASE
   | DEFAULT
+  | CSTCHAR of (char)
   | CSTSTRING of (string)
   | NAME of (string)
   | CSTINT of (int)
@@ -106,6 +107,7 @@ type tokenId =
     | TOKEN_SWITCH
     | TOKEN_CASE
     | TOKEN_DEFAULT
+    | TOKEN_CSTCHAR
     | TOKEN_CSTSTRING
     | TOKEN_NAME
     | TOKEN_CSTINT
@@ -130,12 +132,13 @@ type nonTerminalId =
     | NONTERM_CaseStmt
     | NONTERM_Expr
     | NONTERM_ExprNotAccess
-    | NONTERM_PrintfAccess
+    | NONTERM_PrintfExpr
     | NONTERM_AtExprNotAccess
     | NONTERM_Access
     | NONTERM_Exprs
     | NONTERM_Exprs1
     | NONTERM_Const
+    | NONTERM_ConstChar
     | NONTERM_Type
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int
