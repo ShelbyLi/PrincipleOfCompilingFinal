@@ -426,6 +426,10 @@ and eval e locEnv gloEnv store : int * store =
     | CstI i -> (i, store)
     | CstC c -> ((int c), store)
     | CstS s -> (s.Length, store)
+    | CstF f -> 
+        let bytes = System.BitConverter.GetBytes(float32(f))
+        let v = System.BitConverter.ToInt32(bytes, 0)
+        (v, store)
     | Addr acc -> access acc locEnv gloEnv store
     | Prim1 (ope, e1) ->
         let (i1, store1) = eval e1 locEnv gloEnv store
@@ -467,23 +471,57 @@ and eval e locEnv gloEnv store : int * store =
         if v<>0 then eval e2 locEnv gloEnv store1  // true执行e2
                 else eval e3 locEnv gloEnv store1  // false执行e3
     | Printf (s, exprs) ->
-        let rec evalExprs exprs store1 =  // 循环计算printf后面所有表达式的值
+        // let rec evalExprs exprs store1 =  // 循环计算printf后面所有表达式的值
+        //     match exprs with
+        //     | e :: tail ->  
+        //         let (v, store2) = eval e locEnv gloEnv store1 
+        //         let (vlist, store3) = evalExprs tail store2
+        //         ([v] @ vlist, store3)
+        //     | [] -> ([], store1)
+        // let (evals, store1) = evalExprs exprs store
+        let oneExpr exprs store1 =  // 返回计算得到的值, 剩下的exprs, 新的store
             match exprs with
             | e :: tail ->  
                 let (v, store2) = eval e locEnv gloEnv store1 
-                let (vlist, store3) = evalExprs tail store2
-                ([v] @ vlist, store3)
-            | [] -> ([], store1)
-        let (evals, store1) = evalExprs exprs store
+                // let (vlist, store3) = evalExprs tail store2
+                (v, tail, store2)
+            | [] -> failwith "few expression"
 
 
+        let mutable store1 = store
         let getPrintString =
-            let mutable i = 0
             let slist = s.Split('%')
             let mutable resString = slist.[0]
             let mutable i = 1
+            let mutable es = exprs
+            // let mutable store1 = store
             while i < slist.Length do
-                resString <- resString + evals.[i-1].ToString() + slist.[i].[1..]
+                let printv =
+                    match slist.[i].[0] with
+                    | 'd' -> 
+                        let (e, exprs2, store2) = oneExpr exprs store1
+                        // let intv = 1
+                        // if e.GetType().IsEquivalentTo((1).GetType()) then  // 检查类型是否是int..但是现在存的都是int ?
+                            // evals.[i-1].ToString()
+                        es <- exprs2
+                        store1 <- store2
+                        e.ToString()
+                    | 'c' -> 
+                        let (e, exprs2, store2) = oneExpr exprs store1
+                        // char(evals.[i-1]).ToString()
+                        es <- exprs2
+                        store1 <- store2
+                        char(e).ToString()
+                    | 'f' -> 
+                        let (e, exprs2, store2) = oneExpr exprs store1
+                        es <- exprs2
+                        store1 <- store2
+                        let bytes = System.BitConverter.GetBytes(e)
+                        let v = System.BitConverter.ToSingle(bytes, 0)
+                        v.ToString()
+                    | _ -> failwith "format mismatch"
+
+                resString <- resString + printv + slist.[i].[1..]
                 i <- i + 1
             printf "%s" resString
             1  // 返回1

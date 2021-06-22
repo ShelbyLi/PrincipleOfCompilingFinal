@@ -25,7 +25,9 @@ let third  (_, _, c) = c
 %token <int> CSTINT CSTBOOL  // <int> 是词元的语义值类型
 %token <string> CSTSTRING NAME
 %token <char> CSTCHAR
-%token BREAK CASE CHAR CONTINUE DEFAULT DO ELSE FOR IF INT NULL PRINT PRINTLN PRINTF RETURN STRING SWITCH VOID WHILE 
+%token <float32> CSTFLOAT
+
+%token BREAK CASE CHAR CONTINUE DEFAULT DO ELSE FLOAT FOR IF INT NULL PRINT PRINTLN PRINTF RETURN STRING SWITCH VOID WHILE 
 %token PLUS MINUS TIMES DIV MOD
 %token SELFINC SELFDEC  // 自增自减
 %token EQ NE GT LT GE LE
@@ -238,6 +240,7 @@ AtExprNotAccess:
     Const                               { CstI $1             }
   | ConstChar                           { CstC $1 }
   | ConstString                         { CstS $1 }
+  | ConstFloat                          { CstF $1 }
   | LPAR ExprNotAccess RPAR             { $2                  } 
   | AMP Access                          { Addr $2             } // 取地址
 ;
@@ -268,15 +271,21 @@ Const:
 ;
 
 ConstChar:
-  | CSTCHAR                             { $1       }
+    CSTCHAR                             { $1       }
 ;
 
 ConstString:
-  | CSTSTRING                           { $1 }
+    CSTSTRING                           { $1       }
+;
+
+ConstFloat:
+    CSTFLOAT                             { $1      }
+  | MINUS CSTFLOAT                       { - $2    }
 ;
 
 Type:
     INT                                 { TypI     }
   | CHAR                                { TypC     }
   | STRING                              { TypS     }
+  | FLOAT                               { TypF     }
 ;

@@ -16,6 +16,7 @@ type typ =
   | TypA of typ * int option         (* Array type                  *)
   | TypP of typ                      (* Pointer type                *)
   | TypS
+  | TypF
                                                                    
 and expr =                           // 表达式，右值                                                
   | Access of access                 (* x    or  *p    or  a[e]     *) //访问左值（右值）
@@ -30,6 +31,7 @@ and expr =                           // 表达式，右值
   | CstI of int                      (* Constant                    *)
   | CstC of char                     (* char类型  *)
   | CstS of string
+  | CstF of float32
   | Prim1 of string * expr           (* Unary primitive operator    *)
   | Prim2 of string * expr * expr    (* Binary primitive operator   *)
   | Prim3 of expr * expr * expr      (* 三目运算 e1 ? e2 : e3 *)
