@@ -35,8 +35,14 @@ type token =
   | TIMES
   | DIV
   | MOD
+  | BREAK
+  | CASE
   | CHAR
+  | CONTINUE
+  | DEFAULT
+  | DO
   | ELSE
+  | FOR
   | IF
   | INT
   | NULL
@@ -44,15 +50,10 @@ type token =
   | PRINTLN
   | PRINTF
   | RETURN
+  | STRING
+  | SWITCH
   | VOID
   | WHILE
-  | FOR
-  | DO
-  | SWITCH
-  | CASE
-  | DEFAULT
-  | BREAK
-  | CONTINUE
   | CSTCHAR of (char)
   | CSTSTRING of (string)
   | NAME of (string)
@@ -93,8 +94,14 @@ type tokenId =
     | TOKEN_TIMES
     | TOKEN_DIV
     | TOKEN_MOD
+    | TOKEN_BREAK
+    | TOKEN_CASE
     | TOKEN_CHAR
+    | TOKEN_CONTINUE
+    | TOKEN_DEFAULT
+    | TOKEN_DO
     | TOKEN_ELSE
+    | TOKEN_FOR
     | TOKEN_IF
     | TOKEN_INT
     | TOKEN_NULL
@@ -102,15 +109,10 @@ type tokenId =
     | TOKEN_PRINTLN
     | TOKEN_PRINTF
     | TOKEN_RETURN
+    | TOKEN_STRING
+    | TOKEN_SWITCH
     | TOKEN_VOID
     | TOKEN_WHILE
-    | TOKEN_FOR
-    | TOKEN_DO
-    | TOKEN_SWITCH
-    | TOKEN_CASE
-    | TOKEN_DEFAULT
-    | TOKEN_BREAK
-    | TOKEN_CONTINUE
     | TOKEN_CSTCHAR
     | TOKEN_CSTSTRING
     | TOKEN_NAME
@@ -124,6 +126,7 @@ type nonTerminalId =
     | NONTERM_Topdecs
     | NONTERM_Topdec
     | NONTERM_Vardec
+    | NONTERM_VardecAndAssign
     | NONTERM_Vardesc
     | NONTERM_Fundec
     | NONTERM_Paramdecs
@@ -143,6 +146,7 @@ type nonTerminalId =
     | NONTERM_Exprs1
     | NONTERM_Const
     | NONTERM_ConstChar
+    | NONTERM_ConstString
     | NONTERM_Type
 /// This function maps tokens to integer indexes
 val tagOfToken: token -> int

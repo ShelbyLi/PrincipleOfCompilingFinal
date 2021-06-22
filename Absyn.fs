@@ -15,6 +15,7 @@ type typ =
   | TypC                             (* Type char                   *)
   | TypA of typ * int option         (* Array type                  *)
   | TypP of typ                      (* Pointer type                *)
+  | TypS
                                                                    
 and expr =                           // 表达式，右值                                                
   | Access of access                 (* x    or  *p    or  a[e]     *) //访问左值（右值）
@@ -28,6 +29,7 @@ and expr =                           // 表达式，右值
   | Addr of access                   (* &x   or  &*p   or  &a[e]    *)
   | CstI of int                      (* Constant                    *)
   | CstC of char                     (* char类型  *)
+  | CstS of string
   | Prim1 of string * expr           (* Unary primitive operator    *)
   | Prim2 of string * expr * expr    (* Binary primitive operator   *)
   | Prim3 of expr * expr * expr      (* 三目运算 e1 ? e2 : e3 *)
@@ -66,12 +68,14 @@ and caseStmt =  // switch case中用到的type
 
 and stmtordec =                                                    
   | Dec of typ * string              (* Local variable declaration  *)
+  | DecAndAssign of typ * string * expr
   | Stmt of stmt                     (* A statement                 *)
 
 // 顶级声明 可以是函数声明或变量声明
 and topdec = 
   | Fundec of typ option * string * (typ * string) list * stmt
   | Vardec of typ * string
+  | VardecAndAssign of typ * string * expr
 
 // 程序是顶级声明的列表
 and program = 

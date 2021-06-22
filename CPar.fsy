@@ -12,12 +12,20 @@ open Absyn
 
 let compose1 f (g, s) = ((fun x -> g(f(x))), s)
 let nl = CstI 10 //  \n 的 ASCII 码
+
+// let fst  (a, _, _) = a
+// let snd (_, b, _) = b
+// let thd  (_, _, c) = c
+let first  (a, _, _) = a
+let second (_, b, _) = b
+let third  (_, _, c) = c
+
 %}
 
 %token <int> CSTINT CSTBOOL  // <int> 是词元的语义值类型
 %token <string> CSTSTRING NAME
 %token <char> CSTCHAR
-%token CHAR ELSE IF INT NULL PRINT PRINTLN PRINTF RETURN VOID WHILE FOR DO SWITCH CASE DEFAULT BREAK CONTINUE
+%token BREAK CASE CHAR CONTINUE DEFAULT DO ELSE FOR IF INT NULL PRINT PRINTLN PRINTF RETURN STRING SWITCH VOID WHILE 
 %token PLUS MINUS TIMES DIV MOD
 %token SELFINC SELFDEC  // 自增自减
 %token EQ NE GT LT GE LE
@@ -56,6 +64,8 @@ Topdecs:
 
 Topdec: 
     Vardec SEMI                         { Vardec (fst $1, snd $1) }
+  // | VardecAndAssign SEMI                { VardecAndAssign(fst $1, snd $1, thd $1) }
+  | VardecAndAssign SEMI                { VardecAndAssign(first $1, second $1 , third $1) }
   | Fundec                              { $1 }
 ;
 
@@ -75,6 +85,10 @@ int (*iap)[10];  // pointer to array of 10 int    (TypP (TypA (TypI, Some 10))
 
 Vardec:
     Type Vardesc                        { ((fst $2) $1, snd $2) }
+;
+
+VardecAndAssign:
+  Type Vardesc ASSIGN Expr              { ((fst $2) $1, snd $2, $4) }
 ;
 
 /*
@@ -126,6 +140,8 @@ StmtOrDecSeq:
     /* empty */                         { [] }
   | Stmt StmtOrDecSeq                   { Stmt $1 :: $2 }
   | Vardec SEMI StmtOrDecSeq            { Dec (fst $1, snd $1) :: $3 }
+  // | VardecAndAssign SEMI StmtOrDecSeq   { DecAndAssign (fst $1, snd $1, thd $1) :: $3 } 
+  | VardecAndAssign SEMI StmtOrDecSeq   { DecAndAssign (first $1, second $1 , third $1) :: $3 }  // 一直报错 改成自定义的first second third就对了
 ;
 
 Stmt: 
@@ -220,7 +236,8 @@ AtExprNotAccess:
     // AMP Access  , &x
     // (3)   
     Const                               { CstI $1             }
-  | ConstChar                           { CstC($1) }
+  | ConstChar                           { CstC $1 }
+  | ConstString                         { CstS $1 }
   | LPAR ExprNotAccess RPAR             { $2                  } 
   | AMP Access                          { Addr $2             } // 取地址
 ;
@@ -254,7 +271,12 @@ ConstChar:
   | CSTCHAR                             { $1       }
 ;
 
+ConstString:
+  | CSTSTRING                           { $1 }
+;
+
 Type:
     INT                                 { TypI     }
   | CHAR                                { TypC     }
+  | STRING                              { TypS     }
 ;
