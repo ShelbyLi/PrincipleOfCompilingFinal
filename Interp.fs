@@ -46,6 +46,13 @@ let rec lookup env x =
     | [] -> failwith (x + " not found")
     | (y, v) :: yr -> if x = y then v else lookup yr x
 
+
+let rec structLookup env x index=
+    match env with
+    | []                            -> failwith(x + " not found")
+    | (name, arglist, size)::rhs    -> if x = name then (index, arglist, size) else structLookup rhs x (index+1)
+
+
 (* A local variable environment also knows the next unused store location *)
 
 // ([("x",9);("y",8)],10)
@@ -79,6 +86,9 @@ type paramdecs = (typ * string) list
 *)
 
 type funEnv = (paramdecs * stmt) env
+
+
+type structEnv = (string *  paramdecs * int ) list
 
 (* A global environment consists of a global variable environment
    and a global function environment
@@ -193,6 +203,10 @@ let rec allocate (typ, x) (env0, nextloc) sto0 : locEnv * store =
         match typ with
         //数组 调用 initSto 分配 i 个空间
         | TypA (t, Some i) -> (nextloc + i, nextloc, initSto nextloc i sto0)
+        | TypS -> 
+            (nextloc+128, nextloc, initSto nextloc 128 sto0)
+            // allocate TypA (TypI Some 4) (env0, nextloc) sto0
+            // (nextloc, 0, sto0)
         // 常规变量默认值是 0
         | _ -> (nextloc, 0, sto0)
 
@@ -383,8 +397,38 @@ and eval e locEnv gloEnv store : int * store =
         (getSto store1 loc, store1)
     | Assign (acc, e) ->
         let (loc, store1) = access acc locEnv gloEnv store
-        let (res, store2) = eval e locEnv gloEnv store1
-        (res, setSto store2 loc res)
+        // let (res, store2) = eval e locEnv gloEnv store1
+        // printf "%d" loc
+
+        let (res, store3) = 
+            match e with
+            | CstS s ->
+                let mutable i = 0;
+                let arrloc = getSto store1 loc  // 数组起始地址
+                // printf "i am arrayloc %d\n" arrloc
+                let mutable store2 = store1;
+                while i < s.Length do
+                    store2 <- setSto store2 (arrloc+i) (int (s.Chars(i)))
+                    // printf "loc %d; " (arrloc+i)
+                    // printf "assign %c\n"(s.Chars(i))
+                    i <- i+1
+                // printf "i am new arrayloc %d\n" (getSto store2 loc)
+                // printf "i am new loc%d" loc
+                (s.Length, store2)
+            | _ ->  eval e locEnv gloEnv store1
+        (loc, setSto store3 loc res) 
+        // let (loc, store1) = access acc locEnv gloEnv store
+        // let (res,store2)= 
+        //   match e with
+        //   | CstS s -> 
+        //     let rec sign index stores=
+        //         if index<s.Length then
+        //           sign (index+1) ( setSto stores (loc-index-1) (int (s.Chars(index) ) ) )
+        //         else stores  
+        //     ( s.Length   ,sign 0 store1)
+        //   | _ ->  eval e locEnv gloEnv store1
+        // (res, setSto store2 loc res) 
+
     // | PlusAssign(acc, e) ->
     //     let (loc, store1) = access acc locEnv gloEnv store
     //     let tmp = getSto store1 loc
@@ -425,7 +469,10 @@ and eval e locEnv gloEnv store : int * store =
         (resValue, setSto store2 loc resValue)
     | CstI i -> (i, store)
     | CstC c -> ((int c), store)
-    | CstS s -> (s.Length, store)
+    | CstS s -> 
+        // let (loc, store1) = access (AccVar s) locEnv gloEnv store
+        // (loc, store1)
+        (0, store)
     | CstF f -> 
         let bytes = System.BitConverter.GetBytes(float32(f))
         let v = System.BitConverter.ToInt32(bytes, 0)
@@ -479,12 +526,19 @@ and eval e locEnv gloEnv store : int * store =
         //         ([v] @ vlist, store3)
         //     | [] -> ([], store1)
         // let (evals, store1) = evalExprs exprs store
-        let oneExpr exprs store1 =  // 返回计算得到的值, 剩下的exprs, 新的store
+        let evalOneExpr exprs store1 =  // 返回计算得到的值, 剩下的exprs, 新的store
             match exprs with
             | e :: tail ->  
                 let (v, store2) = eval e locEnv gloEnv store1 
                 // let (vlist, store3) = evalExprs tail store2
                 (v, tail, store2)
+            | [] -> failwith "few expression"
+        
+        let getOneExpr exprs store1 =  // 返回计算得到的值, 剩下的exprs, 新的store
+            match exprs with
+            | e :: tail ->  
+                // let (loc, store2) = access (Access e) locEnv gloEnv store1
+                (e, tail, store1)
             | [] -> failwith "few expression"
 
 
@@ -499,7 +553,7 @@ and eval e locEnv gloEnv store : int * store =
                 let printv =
                     match slist.[i].[0] with
                     | 'd' -> 
-                        let (e, exprs2, store2) = oneExpr exprs store1
+                        let (e, exprs2, store2) = evalOneExpr exprs store1
                         // let intv = 1
                         // if e.GetType().IsEquivalentTo((1).GetType()) then  // 检查类型是否是int..但是现在存的都是int ?
                             // evals.[i-1].ToString()
@@ -507,18 +561,42 @@ and eval e locEnv gloEnv store : int * store =
                         store1 <- store2
                         e.ToString()
                     | 'c' -> 
-                        let (e, exprs2, store2) = oneExpr exprs store1
+                        let (e, exprs2, store2) = evalOneExpr exprs store1
                         // char(evals.[i-1]).ToString()
                         es <- exprs2
                         store1 <- store2
                         char(e).ToString()
                     | 'f' -> 
-                        let (e, exprs2, store2) = oneExpr exprs store1
+                        let (e, exprs2, store2) = evalOneExpr exprs store1
                         es <- exprs2
                         store1 <- store2
                         let bytes = System.BitConverter.GetBytes(e)
                         let v = System.BitConverter.ToSingle(bytes, 0)
                         v.ToString()
+                    | 's' ->
+                        // let (slen, exprs2, store2) = oneExpr exprs store1
+                        // printf "%d" slen
+                        let (e, exprs2, store2) = getOneExpr exprs store1
+                        let (loc, store3) = 
+                            match e with
+                            | Access acc -> access acc locEnv gloEnv store
+                            | _ -> failwith "Don't support expression"
+                        // printf "i m loc2 %d\n" loc
+                        let arrloc = getSto store2 loc  // 数组起始地址
+                        // printf "i am arrayloc2 %d\n" arrloc
+                        // let (loc, store1) = access AccVar e locEnv gloEnv store
+                        // let arrloc = getSto store1 loc
+                        es <- exprs2
+                        store1 <- store2
+                        // let mutable store2 = store1;
+                        let mutable i = 0;
+                        let mutable s = ""
+                        while i < arrloc do
+                            // s <- s + char(getSto store2 (arrloc-i)).ToString()
+                            s <- char(getSto store2 (arrloc-i-1)).ToString() + s
+                            i <- i+1
+                        // printf "i m s %s\n" s
+                        s
                     | _ -> failwith "format mismatch"
 
                 resString <- resString + printv + slist.[i].[1..]

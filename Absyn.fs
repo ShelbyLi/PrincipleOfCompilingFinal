@@ -17,6 +17,7 @@ type typ =
   | TypP of typ                      (* Pointer type                *)
   | TypS
   | TypF
+  | TypStruct of string
                                                                    
 and expr =                           // 表达式，右值                                                
   | Access of access                 (* x    or  *p    or  a[e]     *) //访问左值（右值）
@@ -77,6 +78,7 @@ and stmtordec =
 and topdec = 
   | Fundec of typ option * string * (typ * string) list * stmt
   | Vardec of typ * string
+  | Structdec of string * (typ * string) list
   | VardecAndAssign of typ * string * expr
 
 // 程序是顶级声明的列表

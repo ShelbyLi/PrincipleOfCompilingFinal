@@ -35,6 +35,7 @@ let keyword s =
     | "printf"  -> PRINTF
     | "return"  -> RETURN
     | "String"  -> STRING 
+    // | "struct"  -> STRUCT
     | "switch"  -> SWITCH
     | "true"    -> CSTBOOL 1
     | "void"    -> VOID 

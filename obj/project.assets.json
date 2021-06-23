@@ -206,9 +206,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\microc.fsproj",
-      "projectName": "microc",
-      "projectPath": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\microc.fsproj",
+      "projectUniqueName": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\interpc.fsproj",
+      "projectName": "interpc",
+      "projectPath": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\interpc.fsproj",
       "packagesPath": "C:\\Users\\Shelby\\.nuget\\packages\\",
       "outputPath": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\obj\\",
       "projectStyle": "PackageReference",
