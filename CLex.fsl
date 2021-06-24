@@ -35,7 +35,7 @@ let keyword s =
     | "printf"  -> PRINTF
     | "return"  -> RETURN
     | "String"  -> STRING 
-    // | "struct"  -> STRUCT
+    | "struct"  -> STRUCT
     | "switch"  -> SWITCH
     | "true"    -> CSTBOOL 1
     | "void"    -> VOID 
@@ -108,6 +108,7 @@ rule Token = parse          // 每个 规则rule 会生成为一个函数，函�
   | ','             { COMMA }
   | '?'             { QUES }
   | ':'             { COLON }
+  | '.'             { POINT }
   | "//"            { EndLineComment lexbuf; Token lexbuf }  //单行注释处理规则，调用响应处理函数
                                                              //参数是 lexbuf
                                                              // 处理完后 lexbuf 内容已经更新，注释部分过滤

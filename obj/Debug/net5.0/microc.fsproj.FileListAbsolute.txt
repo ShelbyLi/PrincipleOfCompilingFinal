@@ -1,3 +1,6 @@
+F:\College\1 学习\2020-2021-2\1 编译\final\microc\obj\Debug\net5.0\microc.fsprojAssemblyReference.cache
+F:\College\1 学习\2020-2021-2\1 编译\final\microc\obj\Debug\net5.0\microc.AssemblyInfoInputs.cache
+F:\College\1 学习\2020-2021-2\1 编译\final\microc\obj\Debug\net5.0\microc.AssemblyInfo.fs
 F:\College\1 学习\2020-2021-2\1 编译\final\microc\bin\Debug\net5.0\microc.exe
 F:\College\1 学习\2020-2021-2\1 编译\final\microc\bin\Debug\net5.0\microc.deps.json
 F:\College\1 学习\2020-2021-2\1 编译\final\microc\bin\Debug\net5.0\microc.runtimeconfig.json
@@ -19,9 +22,6 @@ F:\College\1 学习\2020-2021-2\1 编译\final\microc\bin\Debug\net5.0\ru\FSharp
 F:\College\1 学习\2020-2021-2\1 编译\final\microc\bin\Debug\net5.0\tr\FSharp.Core.resources.dll
 F:\College\1 学习\2020-2021-2\1 编译\final\microc\bin\Debug\net5.0\zh-Hans\FSharp.Core.resources.dll
 F:\College\1 学习\2020-2021-2\1 编译\final\microc\bin\Debug\net5.0\zh-Hant\FSharp.Core.resources.dll
-F:\College\1 学习\2020-2021-2\1 编译\final\microc\obj\Debug\net5.0\microc.fsprojAssemblyReference.cache
-F:\College\1 学习\2020-2021-2\1 编译\final\microc\obj\Debug\net5.0\microc.AssemblyInfoInputs.cache
-F:\College\1 学习\2020-2021-2\1 编译\final\microc\obj\Debug\net5.0\microc.AssemblyInfo.fs
 F:\College\1 学习\2020-2021-2\1 编译\final\microc\obj\Debug\net5.0\microc.fsproj.CopyComplete
 F:\College\1 学习\2020-2021-2\1 编译\final\microc\obj\Debug\net5.0\microc.dll
 F:\College\1 学习\2020-2021-2\1 编译\final\microc\obj\Debug\net5.0\microc.pdb

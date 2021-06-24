@@ -88,6 +88,7 @@ type paramdecs = (typ * string) list
 type funEnv = (paramdecs * stmt) env
 
 
+// type structEnv = (string *  typ * int ) list
 type structEnv = (string *  paramdecs * int ) list
 
 (* A global environment consists of a global variable environment
@@ -197,7 +198,7 @@ let rec bindVars xs vs locEnv store : locEnv * store =
  *)
 //
 
-let rec allocate (typ, x) (env0, nextloc) sto0 : locEnv * store =
+let rec allocate (typ, x) (env0, nextloc) structEnv sto0 : locEnv * store =
 
     let (nextloc1, v, sto1) =
         match typ with
@@ -207,11 +208,21 @@ let rec allocate (typ, x) (env0, nextloc) sto0 : locEnv * store =
             (nextloc+128, nextloc, initSto nextloc 128 sto0)
             // allocate TypA (TypI Some 4) (env0, nextloc) sto0
             // (nextloc, 0, sto0)
+        | TypStruct stru ->
+            let (index, arg, size) = structLookup structEnv stru 0
+            (nextloc+size, index, initSto nextloc size sto0)
         // 常规变量默认值是 0
         | _ -> (nextloc, 0, sto0)
 
     msg $"\nalloc:\n {((typ, x), (env0, nextloc), sto0)}"
     bindVar x v (env0, nextloc1) sto1
+
+let typSize typ = 
+    match typ with
+    |  TypA (t, Some i) -> i
+    |  TypS ->  128
+    |  _ -> 1
+
 
 (* Build global environment of variables and functions.  For global
    variables, store locations are reserved; for global functions, just
@@ -251,15 +262,15 @@ let rec allocate (typ, x) (env0, nextloc) sto0 : locEnv * store =
 
 (* Interpreting micro-C statements *)
 
-let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
+let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (structEnv: structEnv) (store: store) : store =
     match stmt with
     | If (e, stmt1, stmt2) ->
-        let (v, store1) = eval e locEnv gloEnv store
+        let (v, store1) = eval e locEnv gloEnv structEnv store
 
         if v <> 0 then
-            exec stmt1 locEnv gloEnv store1 //True分支
+            exec stmt1 locEnv gloEnv structEnv store1 //True分支
         else
-            exec stmt2 locEnv gloEnv store1 //False分支
+            exec stmt2 locEnv gloEnv structEnv store1 //False分支
     // | Switch (e, body) ->
     //     let (v, store1) = eval e locEnv gloEnv store
     //     // 定义辅助函数 pickCase
@@ -277,18 +288,18 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
     //         | _ -> failwith ("unknown grammar")
     //     pickCase body
     | Switch (e, body) ->
-        let (v, store1) = eval e locEnv gloEnv store
+        let (v, store1) = eval e locEnv gloEnv structEnv store
         // 定义辅助函数 pickCase
         let rec pickCase caseList =
             match caseList with
             | Case (e1, body1):: tail -> 
-                let (caseV, caseStore) = eval e1 locEnv gloEnv store1
+                let (caseV, caseStore) = eval e1 locEnv gloEnv structEnv store1
                 if caseV <> v then
                     pickCase tail
                 else  // 执行case的body
-                    exec body1 locEnv gloEnv caseStore
+                    exec body1 locEnv gloEnv structEnv caseStore
             | Default body1 :: tail->
-                exec body1 locEnv gloEnv store1
+                exec body1 locEnv gloEnv structEnv store1
             | [] -> store1
             // | _ -> failwith ("unknown grammar")
             
@@ -301,26 +312,26 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
         //定义 While循环辅助函数 loop
         let rec loop store1 =
             //求值 循环条件,注意变更环境 store
-            let (v, store2) = eval e locEnv gloEnv store1
+            let (v, store2) = eval e locEnv gloEnv structEnv store1
             // match jumpOutStmt with
             // | Break -> store1
             // | Continue -> 
             // 继续循环
             if v <> 0 then
-                loop (exec body locEnv gloEnv store2)
+                loop (exec body locEnv gloEnv structEnv store2)
             else
                 store2 //退出循环返回 环境store2
 
         loop store
     | For (e1, e2, e3, body) ->
-        let (v1, store1) = eval e1 locEnv gloEnv store  // 计算e1
+        let (v1, store1) = eval e1 locEnv gloEnv structEnv store  // 计算e1
         let rec loop store1 =
             //求值 循环条件,注意变更环境 store
-            let (v2, store2) = eval e2 locEnv gloEnv store1
+            let (v2, store2) = eval e2 locEnv gloEnv structEnv store1
             // 继续循环
             if v2 <> 0 then
-                let store3 = exec body locEnv gloEnv store2
-                let (v3, store4) = eval e3 locEnv gloEnv store3
+                let store3 = exec body locEnv gloEnv structEnv store2
+                let (v3, store4) = eval e3 locEnv gloEnv structEnv store3
                 loop store4
             else
                 store2 //退出循环返回 环境store2
@@ -330,21 +341,21 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
     | DoWhile (body, e) ->
         let rec loop store1 =
             //求值 循环条件,注意变更环境 store
-            let (v, store2) = eval e locEnv gloEnv store1
+            let (v, store2) = eval e locEnv gloEnv structEnv store1
             // 继续循环
             if v <> 0 then
-                loop (exec body locEnv gloEnv store2)
+                loop (exec body locEnv gloEnv structEnv store2)
             else
                 store2 //退出循环返回 环境store2
 
-        loop (exec body locEnv gloEnv store)  // 先执行一遍body
+        loop (exec body locEnv gloEnv structEnv store)  // 先执行一遍body
 
     // | Break -> store
     // | Continue -> store
 
     | Expr e ->
         // _ 表示丢弃e的值,返回 变更后的环境store1
-        let (_, store1) = eval e locEnv gloEnv store
+        let (_, store1) = eval e locEnv gloEnv structEnv store
         store1
 
     | Block stmts ->
@@ -355,29 +366,29 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
             | [] -> store
             //语句块,解释 第1条语句s1
             // 调用loop 用变更后的环境 解释后面的语句 sr.
-            | s1 :: sr -> loop sr (stmtordec s1 locEnv gloEnv store)
+            | s1 :: sr -> loop sr (stmtordec s1 locEnv gloEnv structEnv store)
 
         loop stmts (locEnv, store)
 
     | Return _ -> failwith "return not implemented" // 解释器没有实现 return
 
-and stmtordec stmtordec locEnv gloEnv store =
+and stmtordec stmtordec locEnv gloEnv structEnv store =
     match stmtordec with
-    | Stmt stmt -> (locEnv, exec stmt locEnv gloEnv store)
-    | Dec (typ, x) -> allocate (typ, x) locEnv store
+    | Stmt stmt -> (locEnv, exec stmt locEnv gloEnv structEnv store)
+    | Dec (typ, x) -> allocate (typ, x) locEnv structEnv store
     | DecAndAssign (typ, x, e) ->
-        let (locEnv1, store1) = allocate (typ, x) locEnv store
+        let (locEnv1, store1) = allocate (typ, x) locEnv structEnv store
         // let (res, store2) = eval e locEnv1 gloEnv store1
-        let (res, store2) = eval (Assign(AccVar x, e)) locEnv1 gloEnv store1
+        let (res, store2) = eval (Assign(AccVar x, e)) locEnv1 gloEnv structEnv store1
         (locEnv1, store2)
 
 
 (* Evaluating micro-C expressions *)
 
-and eval e locEnv gloEnv store : int * store =
+and eval e locEnv gloEnv structEnv store : int * store =
     match e with
     | ToInt e ->
-        let (i, store1) = eval e locEnv gloEnv store
+        let (i, store1) = eval e locEnv gloEnv structEnv store
         if abs i > 100000000 then // float
             let bytes = System.BitConverter.GetBytes(int32(i))
             let v = System.BitConverter.ToSingle(bytes, 0)
@@ -403,7 +414,7 @@ and eval e locEnv gloEnv store : int * store =
 
 
     | ToChar e ->
-        let (i, store1) = eval e locEnv gloEnv store
+        let (i, store1) = eval e locEnv gloEnv structEnv store
         if abs i > 100000000 then // float
             let bytes = System.BitConverter.GetBytes(int32(i))
             let v = System.BitConverter.ToSingle(bytes, 0)
@@ -421,26 +432,26 @@ and eval e locEnv gloEnv store : int * store =
         // // | _ -> failwith "Could not change the type"
         // | _ -> eval e locEnv gloEnv store
     | PreInc acc -> 
-        let (loc, store1) = access acc locEnv gloEnv store
+        let (loc, store1) = access acc locEnv gloEnv structEnv store
         let tmp = getSto store1 loc
         (tmp + 1, setSto store1 loc (tmp + 1)) 
     | PreDec acc -> 
-        let (loc, store1) = access acc locEnv gloEnv store
+        let (loc, store1) = access acc locEnv gloEnv structEnv store
         let tmp = getSto store1 loc
         (tmp - 1, setSto store1 loc (tmp - 1)) 
     | NextInc acc ->
-        let (loc, store1) = access acc locEnv gloEnv store
+        let (loc, store1) = access acc locEnv gloEnv structEnv store
         let tmp = getSto store1 loc
         (tmp, setSto store1 loc (tmp + 1))  // 先返回值 再加
     | NextDec acc -> 
-        let (loc, store1) = access acc locEnv gloEnv store
+        let (loc, store1) = access acc locEnv gloEnv structEnv store
         let tmp = getSto store1 loc
         (tmp, setSto store1 loc (tmp - 1))
     | Access acc ->
-        let (loc, store1) = access acc locEnv gloEnv store
+        let (loc, store1) = access acc locEnv gloEnv structEnv store
         (getSto store1 loc, store1)
     | Assign (acc, e) ->
-        let (loc, store1) = access acc locEnv gloEnv store
+        let (loc, store1) = access acc locEnv gloEnv structEnv store
         // let (res, store2) = eval e locEnv gloEnv store1
         // printf "%d" loc
 
@@ -459,7 +470,7 @@ and eval e locEnv gloEnv store : int * store =
                 // printf "i am new arrayloc %d\n" (getSto store2 loc)
                 // printf "i am new loc%d" loc
                 (s.Length, store2)
-            | _ ->  eval e locEnv gloEnv store1
+            | _ ->  eval e locEnv gloEnv structEnv store1
         (loc, setSto store3 loc res) 
         // let (loc, store1) = access acc locEnv gloEnv store
         // let (res,store2)= 
@@ -499,9 +510,9 @@ and eval e locEnv gloEnv store : int * store =
     //     let (res, store2) = eval e locEnv gloEnv store1
     //     (tmp % res, setSto store2 loc (tmp%res))
     | OpAssign (op, acc, e) ->
-        let (loc, store1) = access acc locEnv gloEnv store
+        let (loc, store1) = access acc locEnv gloEnv structEnv store
         let tmp = getSto store1 loc
-        let (res, store2) = eval e locEnv gloEnv store1
+        let (res, store2) = eval e locEnv gloEnv structEnv store1
         let resValue =
             match op with
             | "+" -> tmp + res
@@ -522,9 +533,9 @@ and eval e locEnv gloEnv store : int * store =
         let v = System.BitConverter.ToInt32(bytes, 0)
         (v, store)
     // | CstNull -> (0 ,store)
-    | Addr acc -> access acc locEnv gloEnv store
+    | Addr acc -> access acc locEnv gloEnv structEnv store
     | Prim1 (ope, e1) ->
-        let (i1, store1) = eval e1 locEnv gloEnv store
+        let (i1, store1) = eval e1 locEnv gloEnv structEnv store
 
         let res =
             match ope with
@@ -539,8 +550,8 @@ and eval e locEnv gloEnv store : int * store =
 
         (res, store1)
     | Prim2 (ope, e1, e2) ->
-        let (i1, store1) = eval e1 locEnv gloEnv store
-        let (i2, store2) = eval e2 locEnv gloEnv store1
+        let (i1, store1) = eval e1 locEnv gloEnv structEnv store
+        let (i2, store2) = eval e2 locEnv gloEnv structEnv store1
 
         let res =
             match ope with
@@ -559,9 +570,9 @@ and eval e locEnv gloEnv store : int * store =
 
         (res, store2)
     | Prim3 (e1, e2, e3) ->
-        let (v, store1) = eval e1 locEnv gloEnv store  // 求条件的值
-        if v<>0 then eval e2 locEnv gloEnv store1  // true执行e2
-                else eval e3 locEnv gloEnv store1  // false执行e3
+        let (v, store1) = eval e1 locEnv gloEnv structEnv store  // 求条件的值
+        if v<>0 then eval e2 locEnv gloEnv structEnv store1  // true执行e2
+                else eval e3 locEnv gloEnv structEnv store1  // false执行e3
     | Printf (s, exprs) ->
         // let rec evalExprs exprs store1 =  // 循环计算printf后面所有表达式的值
         //     match exprs with
@@ -574,7 +585,7 @@ and eval e locEnv gloEnv store : int * store =
         let evalOneExpr exprs store1 =  // 返回计算得到的值, 剩下的exprs, 新的store
             match exprs with
             | e :: tail ->  
-                let (v, store2) = eval e locEnv gloEnv store1 
+                let (v, store2) = eval e locEnv gloEnv structEnv store1 
                 // let (vlist, store3) = evalExprs tail store2
                 (v, tail, store2)
             | [] -> failwith "few expression"
@@ -624,7 +635,7 @@ and eval e locEnv gloEnv store : int * store =
                         let (e, exprs2, store2) = getOneExpr exprs store1
                         let (loc, store3) = 
                             match e with
-                            | Access acc -> access acc locEnv gloEnv store
+                            | Access acc -> access acc locEnv gloEnv structEnv store
                             | _ -> failwith "Don't support expression"
                         // printf "i m loc2 %d\n" loc
                         let arrloc = getSto store2 loc  // 数组起始地址
@@ -651,40 +662,68 @@ and eval e locEnv gloEnv store : int * store =
         (getPrintString, store1)
 
     | Andalso (e1, e2) ->
-        let (i1, store1) as res = eval e1 locEnv gloEnv store
+        let (i1, store1) as res = eval e1 locEnv gloEnv structEnv store
 
         if i1 <> 0 then
-            eval e2 locEnv gloEnv store1
+            eval e2 locEnv gloEnv structEnv store1
         else
             res
     | Orelse (e1, e2) ->
-        let (i1, store1) as res = eval e1 locEnv gloEnv store
+        let (i1, store1) as res = eval e1 locEnv gloEnv structEnv store
 
         if i1 <> 0 then
             res
         else
-            eval e2 locEnv gloEnv store1
-    | Call (f, es) -> callfun f es locEnv gloEnv store
+            eval e2 locEnv gloEnv structEnv store1
+    | Call (f, es) -> callfun f es locEnv gloEnv structEnv store
 
-and access acc locEnv gloEnv store : int * store =
+and access acc locEnv gloEnv structEnv store : int * store =
     match acc with
     | AccVar x -> (lookup (fst locEnv) x, store)
-    | AccDeref e -> eval e locEnv gloEnv store
+    | AccDeref e -> eval e locEnv gloEnv structEnv store
     | AccIndex (acc, idx) ->
-        let (a, store1) = access acc locEnv gloEnv store
+        let (a, store1) = access acc locEnv gloEnv structEnv store
         let aval = getSto store1 a
-        let (i, store2) = eval idx locEnv gloEnv store1
+        let (i, store2) = eval idx locEnv gloEnv structEnv store1
         (aval + i, store2)
+    | AccStruct (acc, accMember) ->
+        let (loc, store1) = access acc locEnv gloEnv structEnv store
+        let strct  = getSto store1 loc
+        let memberlist = structEnv.[strct]
 
-and evals es locEnv gloEnv store : int list * store =
+        let paramList =
+            match memberlist with 
+            | (string, paramdecs, int) -> paramdecs  // 得到该struct的parmdecs
+
+        let rec getMemberIdx paramList index =  // 循环查找要找的变量名
+            match paramList with
+            | [] -> failwith("can not find ")
+            | (typ , varName ) :: tail -> 
+                match accMember with
+                | AccVar x -> 
+                    if x = varName then ( index + ( typSize typ ) )
+                    else getMemberIdx tail ( index + ( typSize typ) )
+                | AccIndex( accList, idx ) ->  
+                    match accList with
+                    | AccVar y ->  
+                        if varName = y then 
+                            let (i, store2) = eval idx locEnv gloEnv structEnv store1
+                            (index + i)
+                        else getMemberIdx tail (index + (typSize typ))
+                    | _ -> failwith "fail"
+                | _ -> failwith "fail"
+        ((loc+(getMemberIdx paramList 0)), store1)
+
+
+and evals es locEnv gloEnv structEnv store : int list * store =
     match es with
     | [] -> ([], store)
     | e1 :: er ->
-        let (v1, store1) = eval e1 locEnv gloEnv store
-        let (vr, storer) = evals er locEnv gloEnv store1
+        let (v1, store1) = eval e1 locEnv gloEnv structEnv store
+        let (vr, storer) = evals er locEnv gloEnv structEnv store1
         (v1 :: vr, storer)
 
-and callfun f es locEnv gloEnv store : int * store =
+and callfun f es locEnv gloEnv structEnv store : int * store =
 
     msg
     <| sprintf "callfun: %A\n" (f, locEnv, gloEnv, store)
@@ -692,43 +731,51 @@ and callfun f es locEnv gloEnv store : int * store =
     let (_, nextloc) = locEnv
     let (varEnv, funEnv) = gloEnv
     let (paramdecs, fBody) = lookup funEnv f
-    let (vs, store1) = evals es locEnv gloEnv store
+    let (vs, store1) = evals es locEnv gloEnv structEnv store
 
     let (fBodyEnv, store2) =
         bindVars (List.map snd paramdecs) vs (varEnv, nextloc) store1
 
-    let store3 = exec fBody fBodyEnv gloEnv store2
+    let store3 = exec fBody fBodyEnv gloEnv structEnv store2
     (-111, store3)
 
-and initEnvAndStore (topdecs: topdec list) : locEnv * funEnv * store =
+and initEnvAndStore (topdecs: topdec list) : locEnv * funEnv *  structEnv * store =
 
     //包括全局函数和全局变量
     msg $"\ntopdecs:\n{topdecs}\n"
 
-    let rec addv decs locEnv funEnv store =
+    let rec addv decs locEnv funEnv structEnv store =
         match decs with
-        | [] -> (locEnv, funEnv, store)
+        | [] -> (locEnv, funEnv, structEnv, store)
 
         // 全局变量声明  调用allocate 在store上给变量分配空间
         | Vardec (typ, x) :: decr ->
-            let (locEnv1, sto1) = allocate (typ, x) locEnv store
-            addv decr locEnv1 funEnv sto1
+            let (locEnv1, sto1) = allocate (typ, x) locEnv structEnv store
+            addv decr locEnv1 funEnv structEnv sto1
 
         | VardecAndAssign (typ, x, e) :: decr ->
-            let (locEnv1, sto1) = allocate (typ, x) locEnv store
+            let (locEnv1, sto1) = allocate (typ, x) locEnv structEnv store
             // let (v, sto2) = eval e locEnv ([], 0) store
             // let (v1, sto3) = Assign (x, v) 
             // addv decr locEnv1 funEnv sto3
             // let (res, store2) = eval (Assign(AccVar x, e)) locEnv1 gloEnv sto1
-            addv decr locEnv1 funEnv sto1
+            addv decr locEnv1 funEnv structEnv sto1
+        | Structdec (struName, memberlist) :: decr ->
+            let rec getSize list strucSize = 
+                match list with
+                | [] -> strucSize
+                | ( typ, memberName ):: tail -> getSize tail ((typSize typ) + strucSize)
+            let size = getSize memberlist 0
+            addv decr locEnv funEnv ((struName, memberlist, size) :: structEnv) store
+
         //全局函数 将声明(f,(xs,body))添加到全局函数环境 funEnv
-        | Fundec (_, f, xs, body) :: decr -> addv decr locEnv ((f, (xs, body)) :: funEnv) store
+        | Fundec (_, f, xs, body) :: decr -> addv decr locEnv ((f, (xs, body)) :: funEnv) structEnv store
 
     // ([], 0) []  默认全局环境
     // locEnv ([],0) 变量环境 ，变量定义为空列表[],下一个空闲地址为0
     // ([("n", 1); ("r", 0)], 2)  表示定义了 变量 n , r 下一个可以用的变量索引是 2
     // funEnv []   函数环境，函数定义为空列表[]
-    addv topdecs ([], 0) [] emptyStore
+    addv topdecs ([], 0) [] [] emptyStore
 
 
 (* Interpret a complete micro-C program by initializing the store
@@ -740,7 +787,7 @@ and initEnvAndStore (topdecs: topdec list) : locEnv * funEnv * store =
 // 可以为空 []
 let run (Prog topdecs) vs =
     //
-    let ((varEnv, nextloc), funEnv, store0) = initEnvAndStore topdecs
+    let ((varEnv, nextloc), funEnv, structEnv, store0) = initEnvAndStore topdecs
 
     // mainParams 是 main 的参数列表
     //
@@ -778,7 +825,7 @@ let run (Prog topdecs) vs =
     sprintf "\nstore1:\n %A\n" store1
 
     let endstore =
-        exec mainBody mainBodyEnv (varEnv, funEnv) store1
+        exec mainBody mainBodyEnv (varEnv, funEnv) structEnv store1
 
     msg $"\nvarEnv:\n{varEnv}"
     msg $"\nStore:\n"

@@ -14,6 +14,7 @@ type token =
   | AMP
   | QUES
   | COLON
+  | POINT
   | PLUSASSIGN
   | MINUSASSIGN
   | TIMESASSIGN
@@ -35,6 +36,7 @@ type token =
   | TIMES
   | DIV
   | MOD
+  | STRUCT
   | BREAK
   | CASE
   | CHAR
@@ -75,6 +77,7 @@ type tokenId =
     | TOKEN_AMP
     | TOKEN_QUES
     | TOKEN_COLON
+    | TOKEN_POINT
     | TOKEN_PLUSASSIGN
     | TOKEN_MINUSASSIGN
     | TOKEN_TIMESASSIGN
@@ -96,6 +99,7 @@ type tokenId =
     | TOKEN_TIMES
     | TOKEN_DIV
     | TOKEN_MOD
+    | TOKEN_STRUCT
     | TOKEN_BREAK
     | TOKEN_CASE
     | TOKEN_CHAR
@@ -132,6 +136,8 @@ type nonTerminalId =
     | NONTERM_Vardec
     | NONTERM_VardecAndAssign
     | NONTERM_Vardesc
+    | NONTERM_Structdec
+    | NONTERM_MemberDefList
     | NONTERM_Fundec
     | NONTERM_Paramdecs
     | NONTERM_Paramdecs1

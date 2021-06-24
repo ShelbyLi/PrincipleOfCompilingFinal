@@ -28,14 +28,14 @@ let third  (_, _, c) = c
 %token <float32> CSTFLOAT
 
 %token BREAK CASE CHAR CONTINUE DEFAULT DO ELSE FLOAT FOR IF INT NULL PRINT PRINTLN PRINTF RETURN STRING SWITCH VOID WHILE 
-// %token STRUCT
+%token STRUCT
 
 %token PLUS MINUS TIMES DIV MOD
 %token SELFINC SELFDEC  // 自增自减
 %token EQ NE GT LT GE LE
 %token NOT SEQOR SEQAND
 %token PLUSASSIGN MINUSASSIGN TIMESASSIGN DIVASSIGN MODASSIGN
-%token LPAR RPAR LBRACE RBRACE LBRACK RBRACK SEMI COMMA ASSIGN AMP QUES COLON
+%token LPAR RPAR LBRACE RBRACE LBRACK RBRACK SEMI COMMA ASSIGN AMP QUES COLON POINT
 %token EOF
 
 %right ASSIGN             /* lowest precedence */  // 最下面的优先级最高
@@ -71,7 +71,7 @@ Topdec:
     Vardec SEMI                         { Vardec (fst $1, snd $1) }
   // | VardecAndAssign SEMI                { VardecAndAssign(fst $1, snd $1, thd $1) }
   | VardecAndAssign SEMI                { VardecAndAssign(first $1, second $1 , third $1) }
-  // | StructDec SEMI                      { StructDec(fst $1,snd $1) }
+  | Structdec SEMI                      { Structdec(fst $1, snd $1) }
   | Fundec                              { $1 }
 ;
 
@@ -119,14 +119,14 @@ Vardesc:
   | Vardesc LBRACK CSTINT RBRACK        { compose1 (fun t -> TypA(t, Some $3)) $1 }
 ;
 
-// StructDec:
-//   STRUCT NAME LBRACE MemberDefList RBRACE         { ($2, $4) }
-// ;
+Structdec:
+  STRUCT NAME LBRACE MemberDefList RBRACE         { ($2, $4) }
+;
 
-// MemberDefList:
-//     /* empty */ { [] }
-//   | VariableDeclare SEMI MemberDefList { $1 :: $3 }
-// ;
+MemberDefList:
+    /* empty */ { [] }
+  | Vardec SEMI MemberDefList { $1 :: $3 }
+;
 
 Fundec:
     // 返回 void 的函数
@@ -267,6 +267,7 @@ Access:    //可以为左值的情况
   | TIMES Access                        { AccDeref (Access $2)}  // 指针  *x 
   | TIMES AtExprNotAccess               { AccDeref $2         }
   | Access LBRACK Expr RBRACK           { AccIndex($1, $3)    }   
+  | Access POINT Access                 { AccStruct($1, $3) }
 ;
 
 Exprs:
@@ -304,5 +305,5 @@ Type:
   | CHAR                                { TypC     }
   | STRING                              { TypS     }
   | FLOAT                               { TypF     }
-  // | STRUCT NAME                         { TypStruct $2 }
+  | STRUCT NAME                         { TypStruct $2 }
 ;
