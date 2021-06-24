@@ -178,44 +178,65 @@ let rec cStmt stmt (varEnv: VarEnv) (funEnv: FunEnv) : instr list =
         let labbegin = newLabel ()
         let labtest = newLabel ()
         let labend = newLabel ()
-        lablist <- [labend; labtest; labbegin]
-        [ GOTO labtest; Label labbegin ]
-        // @(match body with
-        //     | JumpOut j ->
-        //         match j with
-        //         | "break" ->  [GOTO labend]
-        //         | "continue" -> [GOTO labbegin]
-        //         | _ -> []
-        //     | _ -> cStmt body varEnv funEnv)
-        @ cStmt body varEnv funEnv
-          @ [ Label labtest ]
-            @ cExpr e varEnv funEnv @ [ IFNZRO labbegin; Label labend]
+        lablist <- [labend; labtest; labbegin] @ lablist
+
+        let instr = 
+            [ GOTO labtest; Label labbegin ]
+            @ cStmt body varEnv funEnv
+              @ [ Label labtest ]
+                @ cExpr e varEnv funEnv @ [ IFNZRO labbegin; Label labend]
+
+        lablist <- dellab lablist
+        lablist <- dellab lablist
+        lablist <- dellab lablist
+        instr
     | For (e1, e2, e3, body) ->
         let labbegin = newLabel ()
         let labtest = newLabel ()
+        let labend = newLabel ()
+        lablist <- [labend; labtest; labbegin] @ lablist
 
-        cExpr e1 varEnv funEnv
-        @ [ GOTO labtest; Label labbegin ]
-          @ cStmt body varEnv funEnv
-            @ cExpr e3 varEnv funEnv
-              @ [ Label labtest ]
-                @ cExpr e2 varEnv funEnv @ [ IFNZRO labbegin ]
+        let instr = 
+            cExpr e1 varEnv funEnv
+             @ [INCSP -1] @ [ GOTO labtest; Label labbegin ]
+                  @ cStmt body varEnv funEnv
+                    @ cExpr e3 varEnv funEnv @ [INCSP -1]
+                      @ [ Label labtest ]
+                        @ cExpr e2 varEnv funEnv @ [ IFNZRO labbegin; Label labend ]
+        // [INCSP -7] @ cExpr e1 varEnv funEnv @ [INCSP -1]
+        // @ [ GOTO labtest; Label labbegin ] @ [INCSP -7]
+        //   @ cStmt body varEnv funEnv @ [INCSP -7]
+        //     @ cExpr e3 varEnv funEnv @ [INCSP -7]
+        //       @ [ Label labtest ] @ [INCSP -7]
+        //         @ cExpr e2 varEnv funEnv @ [INCSP -7] @ [ IFNZRO labbegin ] @ [INCSP -7]
+        lablist <- dellab lablist
+        lablist <- dellab lablist
+        lablist <- dellab lablist
+        instr
     | DoWhile (body, e) ->
         let labbegin = newLabel ()
         let labtest = newLabel ()
+        let labend = newLabel ()
+        lablist <- [labend; labtest; labbegin] @ lablist
 
-        cStmt body varEnv funEnv
-        @[ GOTO labtest; Label labbegin ]
-          @ cStmt body varEnv funEnv
-            @ [ Label labtest ]
-              @ cExpr e varEnv funEnv @ [ IFNZRO labbegin ]
+        let instr = 
+            cStmt body varEnv funEnv
+            @[ GOTO labtest; Label labbegin ]
+              @ cStmt body varEnv funEnv
+                @ [ Label labtest ]
+                  @ cExpr e varEnv funEnv @ [ IFNZRO labbegin; Label labend ]
+
+        lablist <- dellab lablist
+        lablist <- dellab lablist
+        lablist <- dellab lablist
+        instr
     | Break -> 
     //     let labend = newLabel ()
         let labend = headlab lablist
         [GOTO labend]
     | Continue -> 
     //     // let labbegin = newLabel ()
-        let lablist   = dellab lablist
+        lablist <- dellab lablist
         let labbegin = headlab lablist
         [GOTO labbegin]
     // | JumpOut j ->
@@ -269,6 +290,7 @@ and cExpr (e: expr) (varEnv: VarEnv) (funEnv: FunEnv) : instr list =
     match e with
     | PreInc acc     -> cAccess acc varEnv funEnv @ [DUP] @ [LDI] @ [CSTI 1] @ [ADD] @ [STI]
     | PreDec acc     -> cAccess acc varEnv funEnv @ [DUP] @ [LDI] @ [CSTI 1] @ [SUB] @ [STI] 
+    // | NextInc        -> 
     | Access acc -> cAccess acc varEnv funEnv @ [ LDI ]
     | Assign (acc, e) ->
         cAccess acc varEnv funEnv
