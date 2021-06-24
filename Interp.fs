@@ -376,6 +376,50 @@ and stmtordec stmtordec locEnv gloEnv store =
 
 and eval e locEnv gloEnv store : int * store =
     match e with
+    | ToInt e ->
+        let (i, store1) = eval e locEnv gloEnv store
+        if abs i > 100000000 then // float
+            let bytes = System.BitConverter.GetBytes(int32(i))
+            let v = System.BitConverter.ToSingle(bytes, 0)
+            let res = int(round(v))
+            // printf "welllll %d\n" res
+            (res, store1)
+        else
+            (i, store1)
+        // match e with
+        // // | CstC c -> (int c - int '0', store)
+        // | CstC c -> 
+        //     printf "i am in\n"
+        //     (int c, store)
+        // | CstF f -> 
+        //     let bytes = System.BitConverter.GetBytes(int32(f))
+        //     let v = System.BitConverter.ToSingle(bytes, 0)
+        //     printf "test %f\n" f
+        //     (int v, store)
+        // | _ -> 
+        //     printf "not in\n"
+        //     eval e locEnv gloEnv store
+        // // | _ -> failwith "Could not change the type"
+
+
+    | ToChar e ->
+        let (i, store1) = eval e locEnv gloEnv store
+        if abs i > 100000000 then // float
+            let bytes = System.BitConverter.GetBytes(int32(i))
+            let v = System.BitConverter.ToSingle(bytes, 0)
+            let res = int(round(v))
+            // printf "welllll %d\n" res
+            (res, store1)
+        else
+            (i, store1)
+        // match e with
+        // // | CstC c -> (int c - int '0', store)
+        // | CstC c -> (int c, store)
+        // | CstF f -> 
+        //     printf "test %d\n" (int f)
+        //     (int f, store)
+        // // | _ -> failwith "Could not change the type"
+        // | _ -> eval e locEnv gloEnv store
     | PreInc acc -> 
         let (loc, store1) = access acc locEnv gloEnv store
         let tmp = getSto store1 loc
@@ -469,14 +513,15 @@ and eval e locEnv gloEnv store : int * store =
         (resValue, setSto store2 loc resValue)
     | CstI i -> (i, store)
     | CstC c -> ((int c), store)
-    | CstS s -> 
+    | CstS s -> (s.Length, store)
         // let (loc, store1) = access (AccVar s) locEnv gloEnv store
         // (loc, store1)
-        (0, store)
+        // (0, store)
     | CstF f -> 
         let bytes = System.BitConverter.GetBytes(float32(f))
         let v = System.BitConverter.ToInt32(bytes, 0)
         (v, store)
+    // | CstNull -> (0 ,store)
     | Addr acc -> access acc locEnv gloEnv store
     | Prim1 (ope, e1) ->
         let (i1, store1) = eval e1 locEnv gloEnv store

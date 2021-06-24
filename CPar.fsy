@@ -48,6 +48,7 @@ let third  (_, _, c) = c
 %nonassoc GT LT GE LE
 %left PLUS MINUS
 %left TIMES DIV MOD 
+%right CHAR INT
 %nonassoc NOT AMP SELFINC SELFDEC
 %nonassoc LBRACK          /* highest precedence  */
 
@@ -237,6 +238,9 @@ ExprNotAccess:
   | Expr QUES Expr COLON Expr           { Prim3($1, $3, $5)}
   | Expr SEQAND Expr                    { Andalso($1, $3)     }
   | Expr SEQOR  Expr                    { Orelse($1, $3)      }
+  | LPAR CHAR RPAR Expr                 { ToChar($4) }
+  | LPAR INT RPAR Expr                  { ToInt($4) }
+  
 ;
 
 PrintfExpr:
@@ -279,7 +283,7 @@ Const:
     CSTINT                              { $1       }
   | CSTBOOL                             { $1       }
   | MINUS CSTINT                        { - $2     }
-  | NULL                                { -1       }
+  | NULL                                { 0       }
 ;
 
 ConstChar:

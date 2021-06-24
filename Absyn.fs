@@ -18,7 +18,7 @@ type typ =
   | TypS
   | TypF
   | TypStruct of string
-                                                                   
+
 and expr =                           // 表达式，右值                                                
   | Access of access                 (* x    or  *p    or  a[e]     *) //访问左值（右值）
   | Assign of access * expr          (* x=e  or  *p=e  or  a[e]=e   *)
@@ -33,6 +33,7 @@ and expr =                           // 表达式，右值
   | CstC of char                     (* char类型  *)
   | CstS of string
   | CstF of float32
+  // | CstNull
   | Prim1 of string * expr           (* Unary primitive operator    *)
   | Prim2 of string * expr * expr    (* Binary primitive operator   *)
   | Prim3 of expr * expr * expr      (* 三目运算 e1 ? e2 : e3 *)
@@ -44,12 +45,14 @@ and expr =                           // 表达式，右值
   | PreDec of access                 (* 自减--x or --a[i]*)
   | NextInc of access                  (*x++ or a[i]--*)
   | NextDec of access                  (*x-- or a[i]--*)
-                                                                   
+  | ToChar of expr
+  | ToInt of expr
+
 and access =                         //左值，存储的位置                                            
   | AccVar of string                 (* Variable access        x    *) 
   | AccDeref of expr                 (* Pointer dereferencing  *p   *)
   | AccIndex of access * expr        (* Array indexing         a[e] *)
-                                                                   
+
 and stmt =                                                         
   | If of expr * stmt * stmt         (* Conditional                 *)
   | Switch of expr * caseStmt list       (* Switch case语句 case有多个 因此是个list*)
