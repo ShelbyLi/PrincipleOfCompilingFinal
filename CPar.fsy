@@ -35,7 +35,7 @@ let third  (_, _, c) = c
 %token EQ NE GT LT GE LE
 %token NOT SEQOR SEQAND
 %token PLUSASSIGN MINUSASSIGN TIMESASSIGN DIVASSIGN MODASSIGN
-%token LPAR RPAR LBRACE RBRACE LBRACK RBRACK SEMI COMMA ASSIGN AMP QUES COLON POINT
+%token LPAR RPAR LBRACE RBRACE LBRACK RBRACK SEMI COMMA ASSIGN AMP QUES COLON POINT BITAND BITOR BITXOR BITLEFT BITRIGHT BITNOT
 %token EOF
 
 %right ASSIGN             /* lowest precedence */  // 最下面的优先级最高
@@ -44,12 +44,14 @@ let third  (_, _, c) = c
 %right PLUSASSIGN MINUSASSIGN TIMESASSIGN DIVASSIGN MODASSIGN
 %left SEQOR
 %left SEQAND
+%left BITXOR BITOR  BITAND
 %left EQ NE 
 %nonassoc GT LT GE LE
+%left BITLEFT BITRIGHT
 %left PLUS MINUS
 %left TIMES DIV MOD 
 %right CHAR INT
-%nonassoc NOT AMP SELFINC SELFDEC
+%nonassoc NOT AMP SELFINC SELFDEC BITNOT
 %nonassoc LBRACK          /* highest precedence  */
 
 %start Main            // 语法开始符号
@@ -235,6 +237,12 @@ ExprNotAccess:
   | Expr LT    Expr                     { Prim2("<",  $1, $3) }
   | Expr GE    Expr                     { Prim2(">=", $1, $3) }
   | Expr LE    Expr                     { Prim2("<=", $1, $3) }
+  | Expr AMP Expr                       { Prim2("&", $1, $3)      }
+  | Expr BITOR  Expr                    { Prim2("|", $1, $3) }
+  | Expr BITXOR  Expr                   { Prim2("^", $1, $3) }
+  | Expr BITLEFT  Expr                  { Prim2("<<", $1, $3) }
+  | Expr BITRIGHT  Expr                 { Prim2(">>", $1, $3) }
+  | BITNOT  Expr                        { Prim1("~", $2) }
   | Expr QUES Expr COLON Expr           { Prim3($1, $3, $5)}
   | Expr SEQAND Expr                    { Andalso($1, $3)     }
   | Expr SEQOR  Expr                    { Orelse($1, $3)      }

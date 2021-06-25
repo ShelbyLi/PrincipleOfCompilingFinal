@@ -51,7 +51,12 @@
 #define PRINTC 23
 #define LDARGS 24
 #define STOP 25
-
+#define BITAND 26
+#define BITOR 27
+#define BITXOR 28
+#define BITLEFT 29
+#define BITRIGHT 30
+#define BITNOT 31
 #define STACKSIZE 1000
 
 // Print the stack machine instruction at p[pc]
@@ -138,6 +143,24 @@ void printInstruction(int p[], int pc)
   case STOP:
     printf("STOP");
     break;
+  case BITLEFT: 
+        printf("BITLEFT");
+        break;
+  case BITRIGHT: 
+        printf("BITRIGHT");
+        break;
+  case BITAND: 
+        printf("BITAND");
+        break;
+  case BITOR: 
+        printf("BITOR");
+        break;
+  case BITXOR: 
+        printf("BITXOR");
+        break;
+  case BITNOT: 
+        printf("BITNOT");
+        break;
   default:
     printf("<unknown>");
     break;
@@ -320,6 +343,18 @@ int execcode(int p[], int s[], int iargs[], int iargc, int /* boolean */ trace)
     break;
     case STOP:
       return 0;
+    case BITLEFT: 
+          s[sp-1] = s[sp-1] << s[sp]; sp--; break;
+    case BITRIGHT: 
+        s[sp-1] = s[sp-1] >> s[sp]; sp--; break;
+    case BITAND: 
+        s[sp-1] = s[sp-1] & s[sp]; sp--; break;
+    case BITOR: 
+        s[sp-1] = s[sp-1] | s[sp]; sp--; break;
+    case BITXOR: 
+          s[sp-1] = s[sp-1] ^ s[sp]; sp--; break;
+	  case BITNOT: 
+          s[sp] = ~s[sp]; break;
     default:
       printf("Illegal instruction %d at address %d\n", p[pc - 1], pc - 1);
       return -1;

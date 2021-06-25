@@ -66,7 +66,7 @@ type Paramdecs = (typ * string) list
 
 type FunEnv = (label * typ option * Paramdecs) Env
 
-let isX86Instr = ref false
+// let isX86Instr = ref false
 
 (* Bind declared variable in env and generate code to allocate it: *)
 // kind : Glovar / Locvar
@@ -138,11 +138,11 @@ let bindParams paras ((env, newloc): VarEnv) : VarEnv = List.fold bindParam (env
     生成 x86 代码，局部地址偏移 *8 ，因为 x86栈上 8个字节表示一个 堆栈的 slot槽位
     栈式虚拟机 无须考虑，每个栈位保存一个变量
 *)
-let x86patch code =
-    if !isX86Instr then
-        code @ [ CSTI -8; MUL ] // x86 偏移地址*8
-    else
-        code 
+// let x86patch code =
+//     if !isX86Instr then
+//         code @ [ CSTI -8; MUL ] // x86 偏移地址*8
+//     else
+//         code 
 (* ------------------------------------------------------------------- *)
 
 (* Compiling micro-C statements:
@@ -310,6 +310,7 @@ and cExpr (e: expr) (varEnv: VarEnv) (funEnv: FunEnv) : instr list =
            | "!" -> [ NOT ]
            | "printi" -> [ PRINTI ]
            | "printc" -> [ PRINTC ]
+           | "~" -> [ BITNOT ]
            | _ -> raise (Failure "unknown primitive 1"))
     | Prim2 (ope, e1, e2) ->
         cExpr e1 varEnv funEnv
@@ -326,6 +327,11 @@ and cExpr (e: expr) (varEnv: VarEnv) (funEnv: FunEnv) : instr list =
              | ">=" -> [ LT; NOT ]
              | ">" -> [ SWAP; LT ]
              | "<=" -> [ SWAP; LT; NOT ]
+             | "&" -> [ BITAND ]
+             | "|" -> [ BITOR ]
+             | "^" -> [ BITXOR ]
+             | "<<" -> [ BITLEFT ]
+             | ">>" -> [ BITRIGHT ]
              | _ -> raise (Failure "unknown primitive 2"))
     | Prim3 (e1, e2, e3) ->
         let labelse = newLabel ()
@@ -395,9 +401,9 @@ and cAccess access varEnv funEnv : instr list =
         // x86 虚拟机指令 需要知道是全局变量 [GVAR addr]
         // 栈式虚拟机Stack VM 的全局变量的地址是 栈上的偏移 用 [CSTI addr] 表示
         | Glovar addr, _ ->
-            if !isX86Instr then
-                [ GVAR addr ]
-            else
+            // if !isX86Instr then
+            //     [ GVAR addr ]
+            // else
                 [ CSTI addr ]
         | Locvar addr, _ -> [ GETBP; OFFSET addr; ADD ]
     | AccDeref e ->
@@ -410,7 +416,7 @@ and cAccess access varEnv funEnv : instr list =
     | AccIndex (acc, idx) ->
         cAccess acc varEnv funEnv
         @ [ LDI ]
-          @ x86patch (cExpr idx varEnv funEnv) @ [ ADD ]
+        //   @ x86patch (cExpr idx varEnv funEnv) @ [ ADD ]
 
 (* Generate code to evaluate a list es of expressions: *)
 
@@ -491,19 +497,19 @@ let compileToFile program fname =
     
     // 面向 x86 的虚拟机指令 略有差异，主要是地址偏移的计算方式不同
     // 单独生成 x86 的指令
-    isX86Instr := true
-    let x86instrs = cProgram program
-    writeInstr (fname + ".insx86") x86instrs
+    // isX86Instr := true
+    // let x86instrs = cProgram program
+    // writeInstr (fname + ".insx86") x86instrs
 
-    let x86asmlist = List.map emitx86 x86instrs
-    let x86asmbody =
-        List.fold (fun asm ins -> asm + ins) "" x86asmlist
+    // let x86asmlist = List.map emitx86 x86instrs
+    // let x86asmbody =
+    //     List.fold (fun asm ins -> asm + ins) "" x86asmlist
 
-    let x86asm =
-        (x86header + beforeinit !argc + x86asmbody)
+    // let x86asm =
+    //     (x86header + beforeinit !argc + x86asmbody)
 
-    printfn $"x86 assembly saved in file:\n\t{fname}.asm"
-    File.WriteAllText(fname + ".asm", x86asm)
+    // printfn $"x86 assembly saved in file:\n\t{fname}.asm"
+    // File.WriteAllText(fname + ".asm", x86asm)
 
     // let deinstrs = decomp bytecode
     // printf "deinstrs: %A\n" deinstrs

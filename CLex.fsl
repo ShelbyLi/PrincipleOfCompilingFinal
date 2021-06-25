@@ -92,6 +92,11 @@ rule Token = parse          // 每个 规则rule 会生成为一个函数，函�
   | '<'             { LT }
   | "++"            { SELFINC }
   | "--"            { SELFDEC }
+  | "~"             { BITNOT }
+  | "<<"            { BITLEFT }
+  | ">>"            { BITRIGHT }
+  | "^"             { BITXOR }       
+  | "|"             { BITOR }
   | ">="            { GE }
   | "<="            { LE }
   | "||"            { SEQOR }                     
