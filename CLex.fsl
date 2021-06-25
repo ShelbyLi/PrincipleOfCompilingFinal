@@ -139,7 +139,7 @@ rule Token = parse          // 每个 规则rule 会生成为一个函数，函�
   | "0"['O''o']['0'-'7']+                { CSTINT (oct2Dec(System.Int32.Parse (binHexOct (lexemeAsString lexbuf)))) }
   | "0"['X''x']['0'-'9''A'-'F''a'-'f']+  {CSTINT (hex2Dec(binHexOct (lexemeAsString lexbuf)))}
     
-  | ['a'-'z''A'-'Z']['a'-'z''A'-'Z''0'-'9']*
+  | ['_''a'-'z''A'-'Z']['a'-'z''A'-'Z''0'-'9']*
                     { keyword (lexemeAsString lexbuf) } //标识符处理
                                                        //先查是否是关键字，是则返回对应关键字的Token
   | '+'             { PLUS }  // 返回Token PLUS 给调用词法分析器的程序，通常是Parser
