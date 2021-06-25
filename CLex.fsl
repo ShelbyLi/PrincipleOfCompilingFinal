@@ -12,6 +12,57 @@ open CPar  // Token 的定义位于语法分析模块中
 let lexemeAsString lexbuf = 
     LexBuffer<char>.LexemeString lexbuf
 
+// 进制转换函数
+let bin2Dec value=
+    let rec binaryToList value n =
+        match value%10 with
+        | _ when value%10 >= 0 && value%10 < 2 -> if value=0 then n else binaryToList (value/10) ((value%10)::n)
+        | _        -> failwith "Does not conform to binary number type."
+    let rec pow n =
+        if n=0 then 1
+        else 2 * (pow (n-1))
+    let rec len xs =
+        match xs with
+        | []-> 0
+        | x::xr->1 + len xr
+    let rec eval (n: int list) =
+        match n with
+        | [] -> 0
+        | xr::yr -> xr * pow (len yr) + eval yr
+    eval (binaryToList value [])
+let oct2Dec value=
+    let rec octalToList value n =
+        match value%10 with
+        | _ when value%10 >= 0 && value%10 < 8 -> if value=0 then n else octalToList (value/10) ((value%10)::n)
+        | _        -> failwith "Does not conform to octal number type."
+    let rec pow n =
+        if n=0 then 1
+        else 8 * (pow (n-1))
+    let rec len xs =
+        match xs with
+        | []-> 0
+        | x::xr->1 + len xr
+    let rec eval (n: int list) =
+        match n with
+        | [] -> 0
+        | xr::yr -> xr * pow (len yr) + eval yr
+    eval (octalToList value [])
+let hex2Dec value = 
+    let rec hexaToList (str:string)  = 
+        if(str.Length <= 0) then []
+        else
+            match str.[0] with
+            | _ when str.[0] >='a' && str.[0] <= 'f'    -> (int str.[0]) - ( int 'a') + 10::hexaToList str.[1..str.Length - 1]
+            | _ when str.[0] >= 'A' && str.[0] <= 'F'   -> (int str.[0]) - ( int 'A') + 10::hexaToList str.[1..str.Length - 1]
+            | _ when str.[0] >= '0' && str.[0] <= '9'   -> (int str.[0]) - ( int '0') ::hexaToList str.[1..str.Length - 1]
+            | _                                         -> failwith "Does not conform to hex number type."
+    let result = hexaToList (value)
+    let mutable num = 0;
+    List.iter(fun i -> num <- num*16 + i)result
+    num
+
+
+
 (* Scan keywords as identifiers and use this function to distinguish them. *)
 (* If the set of keywords is large, use a hashtable instead.               *)
 // keyword 处理关键字与标识符的辅助函数
@@ -42,6 +93,18 @@ let keyword s =
     | "while"   -> WHILE 
     | _         -> NAME s   // 缺省情况，是标识符的名字，如 函数名，变量名等
                             // 当所有的关键字没有匹配成功时，则当成标识符
+
+let binHexOct (s:string) =
+    match s.[0..1] with
+    | "0B"
+    | "0b"
+    | "0O"
+    | "0o"
+    | "0X"
+    | "0x" ->   s.[2..(s.Length)-1] 
+    | _    ->   failwith "Lexer error: no such radix"
+
+
 // 字符串转义符处理函数
 let cEscape s = 
     match s with 
@@ -71,6 +134,10 @@ rule Token = parse          // 每个 规则rule 会生成为一个函数，函�
                             //  CSTINT 需要一个整数作为参数
   | ['0'-'9']+'.'['0'-'9']+ 
                     { CSTFLOAT (System.Single.Parse (lexemeAsString lexbuf)) } 
+  | "0"['B''b']['0'-'1']+                { CSTINT (bin2Dec(System.Int32.Parse (binHexOct (lexemeAsString lexbuf))))}    
+  | "0"['O''o']['0'-'7']+                { CSTINT (oct2Dec(System.Int32.Parse (binHexOct (lexemeAsString lexbuf)))) }
+  | "0"['X''x']['0'-'9''A'-'F''a'-'f']+  {CSTINT (hex2Dec(binHexOct (lexemeAsString lexbuf)))}
+    
   | ['a'-'z''A'-'Z']['a'-'z''A'-'Z''0'-'9']*
                     { keyword (lexemeAsString lexbuf) } //标识符处理
                                                        //先查是否是关键字，是则返回对应关键字的Token

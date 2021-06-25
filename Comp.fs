@@ -339,6 +339,10 @@ and cExpr (e: expr) (varEnv: VarEnv) (funEnv: FunEnv) : instr list =
         let bytes = System.BitConverter.GetBytes(float32(f))
         let v = System.BitConverter.ToInt32(bytes, 0)
         [ CSTI v ]
+    // | CstS s ->
+    //     let bytes = System.BitConverter.GetBytes(char(s))
+    //     let v = System.BitConverter.ToInt32(bytes, 0)
+    //     [ CSTI v ]
     | Addr acc -> cAccess acc varEnv funEnv
     | Prim1 (ope, e1) ->
         cExpr e1 varEnv funEnv
