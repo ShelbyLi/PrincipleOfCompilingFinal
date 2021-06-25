@@ -288,13 +288,34 @@ and cStmtOrDec stmtOrDec (varEnv: VarEnv) (funEnv: FunEnv) : VarEnv * instr list
 
 and cExpr (e: expr) (varEnv: VarEnv) (funEnv: FunEnv) : instr list =
     match e with
-    | PreInc acc     -> cAccess acc varEnv funEnv @ [DUP] @ [LDI] @ [CSTI 1] @ [ADD] @ [STI]
-    | PreDec acc     -> cAccess acc varEnv funEnv @ [DUP] @ [LDI] @ [CSTI 1] @ [SUB] @ [STI] 
-    // | NextInc        -> 
+    | PreInc acc -> 
+        cAccess acc varEnv funEnv 
+            @ [DUP] @ [LDI] @ [CSTI 1] @ [ADD] @ [STI]
+    | PreDec acc -> 
+        cAccess acc varEnv funEnv 
+            @ [DUP] @ [LDI] @ [CSTI 1] @ [SUB] @ [STI] 
+    | NextInc acc ->
+        cAccess acc varEnv funEnv 
+            @ [DUP] @ [LDI] @ [SWAP] @ [DUP] @ [LDI] @ [CSTI 1] @ [ADD] @ [STI] @ [INCSP -1]
+    | NextDec acc ->
+        cAccess acc varEnv funEnv
+            @ [DUP] @ [LDI] @ [SWAP] @ [DUP] @ [LDI] @ [CSTI -1] @ [ADD] @ [STI] @ [INCSP -1]
     | Access acc -> cAccess acc varEnv funEnv @ [ LDI ]
     | Assign (acc, e) ->
         cAccess acc varEnv funEnv
         @ cExpr e varEnv funEnv @ [ STI ]
+    | OpAssign (op, acc, e) ->
+        cAccess acc varEnv funEnv
+            @ [DUP] @ [LDI] @ cExpr e varEnv funEnv 
+                @ (match op with
+                    | "+" -> [ADD]
+                    | "-" -> [SUB]
+                    | "*" -> [MUL]
+                    | "/" -> [DIV]
+                    | "%" -> [MOD]
+                    | _ -> failwith "could not fine operation"
+                )  @ [STI]
+
     | CstI i -> [ CSTI i ]
     | CstC c -> 
         let c = (int c)
