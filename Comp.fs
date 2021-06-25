@@ -174,6 +174,21 @@ let rec cStmt stmt (varEnv: VarEnv) (funEnv: FunEnv) : instr list =
             @ [ GOTO labend ]
               @ [ Label labelse ]
                 @ cStmt stmt2 varEnv funEnv @ [ Label labend ]
+    | Switch (e, body) ->
+        let eValueInstr = cExpr e varEnv funEnv
+        let lab = newLabel()
+        let rec getcode e body = 
+            match body with
+            | []          -> [INCSP 0]
+            | Case (e1, body1):: tail -> 
+              let e1ValueInstr = cExpr e1 varEnv funEnv
+              let sublab = newLabel()
+              eValueInstr @ e1ValueInstr @ [SUB] @ [IFNZRO sublab] @ cStmt body1 varEnv funEnv @ [GOTO lab] @ [Label sublab] @ getcode e tail
+            | Default body1 :: tail->
+                cStmt body1 varEnv funEnv
+      
+        let result = getcode e body @ [Label lab]
+        result
     | While (e, body) ->
         let labbegin = newLabel ()
         let labtest = newLabel ()

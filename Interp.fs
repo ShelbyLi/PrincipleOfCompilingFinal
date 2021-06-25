@@ -546,6 +546,7 @@ and eval e locEnv gloEnv structEnv store : int * store =
             | "printc" ->
                 (printf "%c" (char i1)
                  i1)
+            | "~" -> ~~~i1
             | _ -> failwith ("unknown primitive " + ope)
 
         (res, store1)
@@ -566,6 +567,11 @@ and eval e locEnv gloEnv structEnv store : int * store =
             | "<=" -> if i1 <= i2 then 1 else 0
             | ">=" -> if i1 >= i2 then 1 else 0
             | ">" -> if i1 > i2 then 1 else 0
+            | "&" -> i1 &&& i2
+            | "|" -> i1 ||| i2
+            | "^" -> i1 ^^^ i2
+            | "<<" -> i1 <<< i2
+            | ">>" -> i1 >>> i2
             | _ -> failwith ("unknown primitive " + ope)
 
         (res, store2)
