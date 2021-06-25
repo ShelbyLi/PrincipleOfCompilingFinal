@@ -43,6 +43,7 @@ type token =
   | DIV
   | MOD
   | STRUCT
+  | BOOL
   | BREAK
   | CASE
   | CHAR
@@ -112,6 +113,7 @@ type tokenId =
     | TOKEN_DIV
     | TOKEN_MOD
     | TOKEN_STRUCT
+    | TOKEN_BOOL
     | TOKEN_BREAK
     | TOKEN_CASE
     | TOKEN_CHAR

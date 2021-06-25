@@ -27,7 +27,7 @@ let third  (_, _, c) = c
 %token <char> CSTCHAR
 %token <float32> CSTFLOAT
 
-%token BREAK CASE CHAR CONTINUE DEFAULT DO ELSE FLOAT FOR IF INT NULL PRINT PRINTLN PRINTF RETURN STRING SWITCH VOID WHILE 
+%token BOOL BREAK CASE CHAR CONTINUE DEFAULT DO ELSE FLOAT FOR IF INT NULL PRINT PRINTLN PRINTF RETURN STRING SWITCH VOID WHILE 
 %token STRUCT
 
 %token PLUS MINUS TIMES DIV MOD
@@ -313,5 +313,6 @@ Type:
   | CHAR                                { TypC     }
   | STRING                              { TypS     }
   | FLOAT                               { TypF     }
+  | BOOL                                { TypB    }
   | STRUCT NAME                         { TypStruct $2 }
 ;

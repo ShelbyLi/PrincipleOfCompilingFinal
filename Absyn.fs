@@ -17,6 +17,7 @@ type typ =
   | TypP of typ                      (* Pointer type                *)
   | TypS
   | TypF
+  | TypB
   | TypStruct of string
 
 and expr =                           // 表达式，右值                                                

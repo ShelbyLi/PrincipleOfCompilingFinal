@@ -68,6 +68,7 @@ let hex2Dec value =
 // keyword 处理关键字与标识符的辅助函数
 let keyword s =   
     match s with
+    | "bool"    -> BOOL
     | "break"   -> BREAK
     | "case"    -> CASE
     | "char"    -> CHAR    // 返回对应的Token ,Token 定义于 CPar.fsl 文件中
