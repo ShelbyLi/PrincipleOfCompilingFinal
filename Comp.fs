@@ -449,6 +449,26 @@ and cExpr (e: expr) (varEnv: VarEnv) (funEnv: FunEnv) (structEnv : StructTypeEnv
     //         list <- (int (s.Chars(i))) :: list  // 将字符串转换为char的list
     //     (CSTS list) :: C
     //     [ CSTI v ]
+    // | ToInt e ->
+        // let (i, store1) = eval e locEnv gloEnv structEnv store
+        // if abs i > 100000000 then // float
+        //     let bytes = System.BitConverter.GetBytes(int32(i))
+        //     let v = System.BitConverter.ToSingle(bytes, 0)
+        //     let res = int(round(v))
+        //     // printf "welllll %d\n" res
+        //     (res, store1)
+        // else
+        //     (i, store1)
+
+    // | ToChar e ->
+    //     let code1 = cExpr e varEnv funEnv structEnv
+    //     if abs i > 100000000 then // float
+    //         let bytes = System.BitConverter.GetBytes(int32(i))
+    //         let v = System.BitConverter.ToSingle(bytes, 0)
+    //         let res = int(round(v))
+    //         (res, store1)
+    //     else
+    //         (i, store1)
     | Addr acc -> cAccess acc varEnv funEnv structEnv
     | Prim1 (ope, e1) ->
         cExpr e1 varEnv funEnv structEnv

@@ -375,7 +375,15 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (structEnv: structEnv) (stor
 
         loop stmts (locEnv, store)
 
-    | Return _ -> failwith "return not implemented" // 解释器没有实现 return
+    | Return e -> 
+        // failwith "return not implemented" // 解释器没有实现 return
+        match e with
+        | Some e1 -> 
+            let (res, store0) = eval e1 locEnv gloEnv structEnv store;
+            // printfn "%s" (store0.ToString())
+            let store1 = store0.Add(-1, res);
+            store1
+        | None -> store
 
 and stmtordec stmtordec locEnv gloEnv structEnv store =
     match stmtordec with
@@ -761,7 +769,12 @@ and callfun f es locEnv gloEnv structEnv store : int * store =
         bindVars (List.map snd paramdecs) vs (varEnv, nextloc) store1
 
     let store3 = exec fBody fBodyEnv gloEnv structEnv store2
-    (-111, store3)
+    // (-111, store3)
+    let res = store3.TryFind(-1) 
+    let restore = store3.Remove(-1)
+    match res with
+    | None -> (0,restore)
+    | Some i -> (i,restore)
 
 and initEnvAndStore (topdecs: topdec list) : locEnv * funEnv *  structEnv * store =
 
