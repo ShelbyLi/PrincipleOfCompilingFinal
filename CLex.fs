@@ -70,7 +70,7 @@ let hex2Dec value =
 // keyword 处理关键字与标识符的辅助函数
 let keyword s =   
     match s with
-    // | "Abs"     -> ABS 
+    | "Abs"     -> ABS 
     | "bool"    -> BOOL
     | "break"   -> BREAK
     | "case"    -> CASE

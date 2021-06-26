@@ -60,6 +60,7 @@
 #define THROW 32
 #define PUSHHR 33
 #define POPHR 34
+#define NEG 35
 #define STACKSIZE 1000
 
 // Print the stack machine instruction at p[pc]
@@ -172,6 +173,9 @@ void printInstruction(int p[], int pc)
         break;
   case POPHR: 
         printf("POPHR");
+        break;
+  case NEG:
+        printf("NEG");
         break;
   default:
     printf("<unknown>");
@@ -425,7 +429,9 @@ int execcode(int p[], int s[], int iargs[], int iargc, int /* boolean */ trace)
           return sp;
       }
       break;
-    
+	  case NEG:
+          s[sp] = -s[sp];
+          break;
     default:
       printf("Illegal instruction %d at address %d\n", p[pc - 1], pc - 1);
       return -1;

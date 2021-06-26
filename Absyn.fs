@@ -50,6 +50,7 @@ and expr =                           // 表达式，右值
   | ToInt of expr
   | Max of expr * expr               (* Max function                *)
   | Min of expr * expr               (* Min function                *)
+  | Abs of expr                      (* Abs function                *)
 
 and access =                         //左值，存储的位置                                            
   | AccVar of string                 (* Variable access        x    *) 

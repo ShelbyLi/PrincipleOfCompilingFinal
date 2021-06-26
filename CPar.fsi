@@ -44,6 +44,7 @@ type token =
   | MOD
   | MAX
   | MIN
+  | ABS
   | TRY
   | CATCH
   | THROW
@@ -119,6 +120,7 @@ type tokenId =
     | TOKEN_MOD
     | TOKEN_MAX
     | TOKEN_MIN
+    | TOKEN_ABS
     | TOKEN_TRY
     | TOKEN_CATCH
     | TOKEN_THROW

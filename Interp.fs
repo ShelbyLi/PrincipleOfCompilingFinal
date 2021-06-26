@@ -589,6 +589,9 @@ and eval e locEnv gloEnv structEnv store : int * store =
         let (i2, store2) = eval e2 locEnv gloEnv structEnv store1
         let res = (if i1 < i2 then i1 else i2)
         (res, store2)
+    | Abs e ->
+        let (i, store1) = eval e locEnv gloEnv structEnv store
+        (abs(i), store1)
     | Printf (s, exprs) ->
         // let rec evalExprs exprs store1 =  // 循环计算printf后面所有表达式的值
         //     match exprs with
