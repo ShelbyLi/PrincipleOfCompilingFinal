@@ -349,7 +349,12 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (structEnv: structEnv) (stor
                 store2 //退出循环返回 环境store2
 
         loop (exec body locEnv gloEnv structEnv store)  // 先执行一遍body
-
+    | DoUntil(body,e) -> 
+        let rec loop store1 =
+            let (v, store2) = eval e locEnv gloEnv structEnv  store1
+            if v=0 then loop (exec body locEnv gloEnv structEnv  store2)
+            else store2    
+        loop (exec body locEnv gloEnv structEnv store)
     // | Break -> store
     // | Continue -> store
 

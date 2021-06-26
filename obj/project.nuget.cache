@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "LbEPD9EPiNsua/TxG7DRjgZGHqtEc1Ui1dGmLZYz0PMUf2hIf+5EgtaeHn68OydEyGPD9Kh98MjsfsActGT5qg==",
+  "dgSpecHash": "vHc0Ov2R5NkpqAPeIrAAbrKYAYkz1u6Z+FAGinr2CKWFJoU2eaHVdu5vMpg7SPC6E7rjMeg8i7Fhs5VvfFFifA==",
   "success": true,
-  "projectFilePath": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\forHim\\PrincipleOfCompilingFinal\\interpc.fsproj",
+  "projectFilePath": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\forHim\\PrincipleOfCompilingFinal\\microc.fsproj",
   "expectedPackageFiles": [
     "C:\\Users\\Shelby\\.nuget\\packages\\fsharp.core\\5.0.0\\fsharp.core.5.0.0.nupkg.sha512",
     "C:\\Users\\Shelby\\.nuget\\packages\\fslexyacc\\10.2.0\\fslexyacc.10.2.0.nupkg.sha512",

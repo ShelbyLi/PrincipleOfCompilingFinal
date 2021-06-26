@@ -278,6 +278,23 @@ let rec cStmt stmt (varEnv: VarEnv) (funEnv: FunEnv) (structEnv : StructTypeEnv)
         lablist <- dellab lablist
         lablist <- dellab lablist
         instr
+    | DoUntil (body, e) ->
+        let labbegin = newLabel ()
+        let labtest = newLabel ()
+        let labend = newLabel ()
+        lablist <- [labend; labtest; labbegin] @ lablist
+
+        let instr = 
+            cStmt body varEnv funEnv structEnv
+            @[ GOTO labtest; Label labbegin ]
+              @ cStmt body varEnv funEnv structEnv
+                @ [ Label labtest ]
+                  @ cExpr e varEnv funEnv structEnv @ [ IFZERO labbegin; Label labend ]
+
+        lablist <- dellab lablist
+        lablist <- dellab lablist
+        lablist <- dellab lablist
+        instr
     | Break -> 
     //     let labend = newLabel ()
         let labend = headlab lablist

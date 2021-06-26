@@ -66,6 +66,7 @@ and stmt =
   | While of expr * stmt             (* While loop                  *)
   | For of expr * expr * expr * stmt (* For循环 *)
   | DoWhile of stmt * expr           (* dowhile 循环*)
+  | DoUntil of stmt * expr
   | Break
   | Continue
   | Expr of expr                     (* Expression statement   e;   *)

@@ -96,6 +96,7 @@ let keyword s =
     | "throw"   -> THROW
     | "true"    -> CSTBOOL 1
     | "try"     -> TRY
+    | "until"   -> UNTIL
     | "void"    -> VOID 
     | "while"   -> WHILE 
     | _         -> NAME s   // 缺省情况，是标识符的名字，如 函数名，变量名等

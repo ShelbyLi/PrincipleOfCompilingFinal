@@ -68,6 +68,7 @@ type token =
   | RETURN
   | STRING
   | SWITCH
+  | UNTIL
   | VOID
   | WHILE
   | CSTFLOAT of (float32)
@@ -144,6 +145,7 @@ type tokenId =
     | TOKEN_RETURN
     | TOKEN_STRING
     | TOKEN_SWITCH
+    | TOKEN_UNTIL
     | TOKEN_VOID
     | TOKEN_WHILE
     | TOKEN_CSTFLOAT

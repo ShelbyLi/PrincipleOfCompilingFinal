@@ -27,7 +27,7 @@ let third  (_, _, c) = c
 %token <char> CSTCHAR
 %token <float32> CSTFLOAT
 
-%token BOOL BREAK CASE CHAR CONTINUE DEFAULT DO ELSE FLOAT FOR IF INT NULL PRINT PRINTLN PRINTF RETURN STRING SWITCH VOID WHILE 
+%token BOOL BREAK CASE CHAR CONTINUE DEFAULT DO ELSE FLOAT FOR IF INT NULL PRINT PRINTLN PRINTF RETURN STRING SWITCH UNTIL VOID WHILE 
 %token STRUCT
 %token TRY CATCH THROW
 %token MAX MIN ABS
@@ -178,6 +178,7 @@ StmtM:  /* No unbalanced if-else */
   | WHILE LPAR Expr RPAR StmtM          { While($3, $5)        }
   | FOR LPAR Expr SEMI Expr SEMI Expr RPAR StmtM  { For($3, $5, $7, $9) }
   | DO StmtM WHILE LPAR Expr RPAR SEMI  { DoWhile($2, $5)       }
+  | DO StmtM UNTIL LPAR Expr RPAR SEMI  { DoUntil($2, $5)   }
   | BREAK SEMI                          { Break }
   | CONTINUE SEMI                       { Continue }
   | TRY StmtM CatchStmt                 { Try($2, $3) }
