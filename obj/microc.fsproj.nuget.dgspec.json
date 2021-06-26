@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\microc.fsproj": {}
+    "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\forHim\\PrincipleOfCompilingFinal\\microc.fsproj": {}
   },
   "projects": {
-    "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\microc.fsproj": {
+    "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\forHim\\PrincipleOfCompilingFinal\\microc.fsproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\microc.fsproj",
+        "projectUniqueName": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\forHim\\PrincipleOfCompilingFinal\\microc.fsproj",
         "projectName": "microc",
-        "projectPath": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\microc.fsproj",
+        "projectPath": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\forHim\\PrincipleOfCompilingFinal\\microc.fsproj",
         "packagesPath": "C:\\Users\\Shelby\\.nuget\\packages\\",
-        "outputPath": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\microc\\obj\\",
+        "outputPath": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\forHim\\PrincipleOfCompilingFinal\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Shelby\\AppData\\Roaming\\NuGet\\NuGet.Config"

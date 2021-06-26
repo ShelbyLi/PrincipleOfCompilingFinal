@@ -68,6 +68,7 @@ let hex2Dec value =
 // keyword 处理关键字与标识符的辅助函数
 let keyword s =   
     match s with
+    // | "Abs"     -> ABS 
     | "bool"    -> BOOL
     | "break"   -> BREAK
     | "case"    -> CASE
@@ -82,6 +83,8 @@ let keyword s =
     | "if"      -> IF
     | "int"     -> INT
     | "float"   -> FLOAT
+    // | "Max"     -> MAX
+    // | "Min"     -> MIN
     | "null"    -> NULL
     | "print"   -> PRINT
     | "println" -> PRINTLN
@@ -190,6 +193,7 @@ rule Token = parse          // 每个 规则rule 会生成为一个函数，函�
                                                              // 处理完后 lexbuf 内容已经更新，注释部分过滤
                                                              //调用 Token 规则函数继续注释部分后面的处理
   | "/*"            { Comment lexbuf; Token lexbuf }   // 多行注释，调用 Comment规则
+  | "(*"            { Comment lexbuf; Token lexbuf }
   | '"'             { CSTSTRING (String [] lexbuf) }   // 调用字符串处理规则
   | '\'' [^ '\''] '\''        
                     { try let single = lexemeAsString lexbuf in CSTCHAR (System.Char.Parse(single.Substring(1, 1))) with ex -> failwith "Char literal error." }
@@ -199,6 +203,8 @@ rule Token = parse          // 每个 规则rule 会生成为一个函数，函�
 and Comment = parse
    | "/*"           { Comment lexbuf; Comment lexbuf }  // 注释的嵌套处理
    | "*/"           { () }                           // 注释处理结束
+   | "(*"           { Comment lexbuf; Comment lexbuf }
+   | "*)"           { () }
    | '\n'           { lexbuf.EndPos <- lexbuf.EndPos.NextLine; Comment lexbuf } //注释跨行处理
    | (eof | '\026') { failwith "Lexer error: unterminated comment" }  // 多行注释未封闭
    | _              { Comment lexbuf }  // 其他任意情况都继续处理后续字符
