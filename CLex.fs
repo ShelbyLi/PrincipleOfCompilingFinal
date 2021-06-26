@@ -85,8 +85,8 @@ let keyword s =
     | "if"      -> IF
     | "int"     -> INT
     | "float"   -> FLOAT
-    // | "Max"     -> MAX
-    // | "Min"     -> MIN
+    | "Max"     -> MAX
+    | "Min"     -> MIN
     | "null"    -> NULL
     | "print"   -> PRINT
     | "println" -> PRINTLN

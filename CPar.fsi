@@ -42,6 +42,8 @@ type token =
   | TIMES
   | DIV
   | MOD
+  | MAX
+  | MIN
   | TRY
   | CATCH
   | THROW
@@ -115,6 +117,8 @@ type tokenId =
     | TOKEN_TIMES
     | TOKEN_DIV
     | TOKEN_MOD
+    | TOKEN_MAX
+    | TOKEN_MIN
     | TOKEN_TRY
     | TOKEN_CATCH
     | TOKEN_THROW

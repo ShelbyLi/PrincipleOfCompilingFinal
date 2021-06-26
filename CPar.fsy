@@ -30,6 +30,7 @@ let third  (_, _, c) = c
 %token BOOL BREAK CASE CHAR CONTINUE DEFAULT DO ELSE FLOAT FOR IF INT NULL PRINT PRINTLN PRINTF RETURN STRING SWITCH VOID WHILE 
 %token STRUCT
 %token TRY CATCH THROW
+%token MAX MIN
 
 %token PLUS MINUS TIMES DIV MOD
 %token SELFINC SELFDEC  // 自增自减
@@ -258,6 +259,8 @@ ExprNotAccess:
   | Expr SEQOR  Expr                    { Orelse($1, $3)      }
   | LPAR CHAR RPAR Expr                 { ToChar($4) }
   | LPAR INT RPAR Expr                  { ToInt($4) }
+  | MAX LPAR Expr COMMA Expr RPAR       { Max($3, $5)         }
+  | MIN LPAR Expr COMMA Expr RPAR       { Min($3, $5)         }
   
 ;
 

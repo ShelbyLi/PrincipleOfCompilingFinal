@@ -48,6 +48,8 @@ and expr =                           // 表达式，右值
   | NextDec of access                  (*x-- or a[i]--*)
   | ToChar of expr
   | ToInt of expr
+  | Max of expr * expr               (* Max function                *)
+  | Min of expr * expr               (* Min function                *)
 
 and access =                         //左值，存储的位置                                            
   | AccVar of string                 (* Variable access        x    *) 
