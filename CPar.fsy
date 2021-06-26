@@ -29,6 +29,7 @@ let third  (_, _, c) = c
 
 %token BOOL BREAK CASE CHAR CONTINUE DEFAULT DO ELSE FLOAT FOR IF INT NULL PRINT PRINTLN PRINTF RETURN STRING SWITCH VOID WHILE 
 %token STRUCT
+%token TRY CATCH THROW
 
 %token PLUS MINUS TIMES DIV MOD
 %token SELFINC SELFDEC  // 自增自减
@@ -178,8 +179,7 @@ StmtM:  /* No unbalanced if-else */
   | DO StmtM WHILE LPAR Expr RPAR SEMI  { DoWhile($2, $5)       }
   | BREAK SEMI                          { Break }
   | CONTINUE SEMI                       { Continue }
-  // | BREAK SEMI                          { JumpOut "break" }
-  // | CONTINUE SEMI                       { JumpOut "continue" }
+  | TRY StmtM CatchStmt                 { Try($2, $3) }
 ;
 
 StmtU:
@@ -196,6 +196,16 @@ CaseStmt:
     CASE AtExprNotAccess COLON StmtM      { [Case($2, $4)]   }  
   | DEFAULT COLON StmtM                   { [Default($3)]    }
   | CASE AtExprNotAccess COLON StmtM CaseStmt      { [Case($2,$4)] @ $5  }
+;
+
+CatchStmt:
+    CATCH LPAR EXCEPTION RPAR StmtM                { [Catch($3,$5)]     }
+  | CATCH LPAR EXCEPTION RPAR StmtM CatchStmt      { Catch($3,$5) :: $6 }
+;
+
+
+EXCEPTION:
+  CSTSTRING                                        { Exception $1 }
 ;
 
 Expr: 

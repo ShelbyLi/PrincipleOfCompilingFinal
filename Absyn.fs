@@ -68,11 +68,17 @@ and stmt =
   | Expr of expr                     (* Expression statement   e;   *)
   | Return of expr option            (* Return from method          *)
   | Block of stmtordec list          (* Block: grouping and scope   *)
+  | Throw of excep
+  | Try of stmt * stmt list
+  | Catch of excep * stmt
   // 语句块内部，可以是变量声明 或语句的列表                                                              
 
 and caseStmt =  // switch case中用到的type
   | Case of expr * stmt
   | Default of stmt
+
+and excep = 
+  | Exception of string
 
 and stmtordec =                                                    
   | Dec of typ * string              (* Local variable declaration  *)

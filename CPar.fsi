@@ -42,6 +42,9 @@ type token =
   | TIMES
   | DIV
   | MOD
+  | TRY
+  | CATCH
+  | THROW
   | STRUCT
   | BOOL
   | BREAK
@@ -112,6 +115,9 @@ type tokenId =
     | TOKEN_TIMES
     | TOKEN_DIV
     | TOKEN_MOD
+    | TOKEN_TRY
+    | TOKEN_CATCH
+    | TOKEN_THROW
     | TOKEN_STRUCT
     | TOKEN_BOOL
     | TOKEN_BREAK
@@ -161,6 +167,8 @@ type nonTerminalId =
     | NONTERM_StmtM
     | NONTERM_StmtU
     | NONTERM_CaseStmt
+    | NONTERM_CatchStmt
+    | NONTERM_EXCEPTION
     | NONTERM_Expr
     | NONTERM_ExprNotAccess
     | NONTERM_PrintfExpr

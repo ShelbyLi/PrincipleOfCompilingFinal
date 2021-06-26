@@ -50,6 +50,9 @@ type instr =
   | BITLEFT                            (* bit operation LEFT SHIFT        *)
   | BITRIGHT                           (* bit operation LEFT SHIFT        *)
   | BITNOT                             (* bit operation BITNOT            *)
+  | THROW of int
+  | PUSHHDLR of int * label
+  | POPHDLR
 
 (* Generate new distinct labels *)
 
@@ -194,6 +197,15 @@ let CODEBITRIGHT  = 30;
 [<Literal>]
 let CODEBITNOT  = 31;
 
+[<Literal>]
+let CODETHROW   = 32;
+
+[<Literal>]
+let CODEPUSHHR  = 33;
+
+[<Literal>]
+let CODEPOPHR   = 34;
+
 
 (* Bytecode emission, first pass: build environment that maps 
    each label to an integer address in the bytecode.
@@ -238,6 +250,9 @@ let makelabenv (addr, labenv) instr =
     | BITLEFT        -> (addr+1, labenv)
     | BITRIGHT       -> (addr+1, labenv)
     | BITNOT         -> (addr+1, labenv)
+    | THROW i           -> (addr+2, labenv)
+    | PUSHHDLR (exn ,lab) -> (addr+3, labenv)
+    | POPHDLR           -> (addr+1, labenv)
 (* Bytecode emission, second pass: output bytecode as integers *)
 
 //getlab 是得到标签所在地址的函数
@@ -281,6 +296,9 @@ let rec emitints getlab instr ints =
     | BITLEFT        -> CODEBITLEFT :: ints
     | BITRIGHT       -> CODEBITRIGHT :: ints
     | BITNOT         -> CODEBITNOT :: ints
+    | THROW i           -> CODETHROW    :: i            :: ints
+    | PUSHHDLR (exn, lab) -> CODEPUSHHR :: exn          :: getlab lab   :: ints
+    | POPHDLR           -> CODEPOPHR    :: ints
 
 (* Convert instruction list to int list in two passes:
    Pass 1: build label environment
@@ -344,5 +362,8 @@ let rec decomp ints : instr list =
     | CODEBITAND :: ints_rest                         ->   BITAND        :: decomp ints_rest
     | CODEBITOR :: ints_rest                          ->   BITOR         :: decomp ints_rest
     | CODEBITXOR :: ints_rest                         ->   BITXOR        :: decomp ints_rest
+    | CODETHROW  :: i :: ints_rest                    ->   THROW i        :: decomp ints_rest
+    | CODEPUSHHR :: exn :: lab :: ints_rest           ->   PUSHHDLR (exn, ntolabel lab)     :: decomp ints_rest
+    | CODEPOPHR :: ints_rest                         ->    POPHDLR      :: decomp ints_rest
     | _                                       ->    printf "%A" ints; failwith "unknow code"
 

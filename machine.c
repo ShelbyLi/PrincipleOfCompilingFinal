@@ -57,6 +57,9 @@
 #define BITLEFT 29
 #define BITRIGHT 30
 #define BITNOT 31
+#define THROW 32
+#define PUSHHR 33
+#define POPHR 34
 #define STACKSIZE 1000
 
 // Print the stack machine instruction at p[pc]
@@ -161,6 +164,15 @@ void printInstruction(int p[], int pc)
   case BITNOT: 
         printf("BITNOT");
         break;
+  case THROW:
+        printf("THROW %d", p[pc + 1]);
+        break;
+  case PUSHHR: 
+        printf("PUSHHR %d %d", p[pc + 1], p[pc + 2]);
+        break;
+  case POPHR: 
+        printf("POPHR");
+        break;
   default:
     printf("<unknown>");
     break;
@@ -214,6 +226,7 @@ int execcode(int p[], int s[], int iargs[], int iargc, int /* boolean */ trace)
   int bp = -999; // Base pointer, for local variable access
   int sp = -1;   // Stack top pointer
   int pc = 0;    // Program counter: next instruction
+  int hr = -1;
   for (;;)
   {
     if (trace)
@@ -237,8 +250,35 @@ int execcode(int p[], int s[], int iargs[], int iargc, int /* boolean */ trace)
       sp--;
       break;
     case DIV:
-      s[sp - 1] = s[sp - 1] / s[sp];
-      sp--;
+      // s[sp - 1] = s[sp - 1] / s[sp];
+      // sp--;
+
+      if(s[sp]==0)
+      {
+        // printf("hr: %d ", hr);
+        printf("exception: %d %s\n", 1, "Div error");
+          while (hr != -1 && s[hr] != 1 )
+          {
+              hr = s[hr+2];
+            // printf("hr: %d ", hr);
+              printf("exception: %d\n", p[pc]);
+          }
+              
+          if (hr != -1) { 
+              sp = hr-1;    
+              pc = s[hr+1];
+              hr = s[hr+2];
+          } else {
+              printf("%d not found exception\n", hr);
+              return sp;
+          }
+      }
+      else{
+          s[sp - 1] = s[sp-1] / s[sp];
+          sp--; 
+      }
+                    
+
       break;
     case MOD:
       s[sp - 1] = s[sp - 1] % s[sp];
@@ -355,6 +395,37 @@ int execcode(int p[], int s[], int iargs[], int iargc, int /* boolean */ trace)
           s[sp-1] = s[sp-1] ^ s[sp]; sp--; break;
 	  case BITNOT: 
           s[sp] = ~s[sp]; break;
+    case PUSHHR:
+      s[++sp] = p[pc++];    //exn
+      int tmp = sp;       //exn address
+      sp++;
+      s[sp++] = p[pc++];   //jump address
+      s[sp] = hr;
+      hr = tmp;
+      break;
+    case POPHR:
+        hr = s[sp--];
+        sp-=2;
+        break;
+	  case THROW: 
+      while (hr != -1 && s[hr] != p[pc] )
+      {
+          hr = s[hr+2]; //find exn address
+          // System.out.println("hr:"+hr+" exception:"+new WIntType(program.get(pc)).getValue());
+          printf("hr: %d exception: %d\n", hr, p[pc]);
+      }
+          
+      if (hr != -1) { // Found a handler for exn
+          sp = hr-1;    // remove stack after hr
+          pc = s[hr+1];
+          hr = s[hr+2]; // with current handler being hr
+      } else {
+          // System.out.print(hr+"not find exception");
+          printf("%d not find exception\n");
+          return sp;
+      }
+      break;
+    
     default:
       printf("Illegal instruction %d at address %d\n", p[pc - 1], pc - 1);
       return -1;
