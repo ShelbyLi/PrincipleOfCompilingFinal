@@ -271,6 +271,20 @@ and bStmtordec stmtOrDec varEnv (structEnv : StructTypeEnv) : bstmtordec * VarEn
 
 and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (structEnv : StructTypeEnv) (C : instr list) : instr list =
     match e with
+    // | PreInc acc -> 
+    //     let ass = Assign (acc, Prim2("+", Access acc, (CSTI 1)))
+    //     let C1 = cExpr ass varEnv funEnv lablist structEnv C
+    //     CSTI 1 :: ADD :: (addINCSP -1 C1)
+    // | PreDec acc -> 
+    //     let ass = Assign (acc,Prim2("-", Access acc, e))
+    //     let C1 = cExpr ass varEnv funEnv lablist structEnv C
+    //     CSTI 1 :: SUB :: (addINCSP -1 C1)
+    // | NextInc acc ->
+    //     let ass = Assign (acc,Prim2("+", Access acc, e))
+    //     cExpr ass varEnv funEnv lablist structEnv (addINCSP -1 C)
+    // | NextDec acc ->
+    //     let ass = Assign (acc,Prim2("-",Access acc, e))
+    //     cExpr ass varEnv funEnv lablist structEnv (addINCSP -1 C)
     | Access acc     -> cAccess acc varEnv funEnv lablist structEnv (LDI :: C)
     | Assign(acc, e) -> cAccess acc varEnv funEnv lablist structEnv (cExpr e varEnv funEnv lablist structEnv (STI :: C))
     | CstI i         -> addCST i C
@@ -298,6 +312,11 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (str
             | ">"   -> SWAP :: LT :: C
             | "<="  -> SWAP :: LT :: addNOT C
             | _     -> failwith "unknown primitive 2"))
+    | Prim3(cond, e1, e2)    ->
+        let (jumpend, C1) = makeJump C
+        let (labelse, C2) = addLabel (cExpr e2 varEnv funEnv lablist structEnv C1)
+        cExpr cond varEnv funEnv lablist structEnv (IFZERO labelse :: cExpr e1 varEnv funEnv lablist structEnv (addJump jumpend C2))
+    
     | Andalso(e1, e2) ->
       match C with
       | IFZERO lab :: _ ->
