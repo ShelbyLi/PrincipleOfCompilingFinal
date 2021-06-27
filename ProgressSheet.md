@@ -70,10 +70,10 @@ dotnet run -p microcc.fsproj .\example\myex1.c 3
 | `do while`                         | myex5.c  | ✔       | ✔                                      | ✔          |                                             |
 | `switch case` (无break)            | myex6.c  | ✔       | ✔                                      | ✔          |                                             |
 | `printf` (未检查类型)              | myex7.c  | ✔       |                                        |            |                                             |
-| `char`                             | myex8.c  | ✔       | ✔                                      |            |                                             |
+| `char`                             | myex8.c  | ✔       | ✔                                      | ✔          |                                             |
 | `break continue`                   | myex9.c  |         | ✔                                      |            | 编译continue for i++不执行                  |
 | `int i=0` (全局未实现)             | myex10.c | ✔       | ✔                                      |            |                                             |
-| `float`                            | myex11.c | ✔       | ✔                                      |            |                                             |
+| `float`                            | myex11.c | ✔       | ✔                                      | ✔          |                                             |
 | `String` 及相应的`printf`          | myex12.c | ✔       |                                        |            | 长度固定128                                 |
 | `int(x) char(x)`                   | myex13.c | ✔       | 要判断返回的值大小再决定类型<br />how? |            | 判断变量的类型:<br />>100000000 判断为float |
 | `struct`(string array不能做member) | myex14.c | ✔ TOFIX | ✔                                      | ✔          |                                             |

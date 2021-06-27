@@ -416,6 +416,13 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (str
             | _         -> failwith "Error: unknown unary operator")
 
     | CstI i         -> addCST i C
+    | CstC c -> 
+        let c = (int c)
+        addCST c C
+    | CstF f      -> 
+        let bytes = System.BitConverter.GetBytes(float32(f))
+        let v = System.BitConverter.ToInt32(bytes, 0)
+        addCST v C
     | Addr acc       -> cAccess acc varEnv funEnv lablist structEnv C
     | Prim1(ope, e1) ->
       cExpr e1 varEnv funEnv lablist structEnv
