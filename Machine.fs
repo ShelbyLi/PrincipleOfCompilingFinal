@@ -54,6 +54,7 @@ type instr =
   | PUSHHDLR of int * label
   | POPHDLR
   | NEG                                (* negative number operation       *)
+  | PRINTF
 
 (* Generate new distinct labels *)
 
@@ -210,6 +211,9 @@ let CODEPOPHR   = 34;
 [<Literal>]
 let CODENEG  = 35;
 
+[<Literal>]
+let CODEPRINTF  = 36
+
 (* Bytecode emission, first pass: build environment that maps 
    each label to an integer address in the bytecode.
  *)
@@ -257,6 +261,7 @@ let makelabenv (addr, labenv) instr =
     | PUSHHDLR (exn ,lab) -> (addr+3, labenv)
     | POPHDLR           -> (addr+1, labenv)
     | NEG            -> (addr+1, labenv)
+    | PRINTF            -> (addr+1, labenv)
 (* Bytecode emission, second pass: output bytecode as integers *)
 
 //getlab 是得到标签所在地址的函数
@@ -304,6 +309,7 @@ let rec emitints getlab instr ints =
     | PUSHHDLR (exn, lab) -> CODEPUSHHR :: exn          :: getlab lab   :: ints
     | POPHDLR           -> CODEPOPHR    :: ints
     | NEG            -> CODENEG  :: ints 
+    | PRINTF            -> CODEPRINTF   :: ints
 
 (* Convert instruction list to int list in two passes:
    Pass 1: build label environment
@@ -371,5 +377,6 @@ let rec decomp ints : instr list =
     | CODEPUSHHR :: exn :: lab :: ints_rest           ->   PUSHHDLR (exn, ntolabel lab)     :: decomp ints_rest
     | CODEPOPHR :: ints_rest                         ->    POPHDLR      :: decomp ints_rest
     | CODENEG :: ints_rest                            ->   NEG           :: decomp ints_rest
+    | CODEPRINTF :: ints_rest                       ->   PRINTF         :: decomp ints_rest
     | _                                       ->    printf "%A" ints; failwith "unknow code"
 

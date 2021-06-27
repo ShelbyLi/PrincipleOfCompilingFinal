@@ -61,7 +61,22 @@
 #define PUSHHR 33
 #define POPHR 34
 #define NEG 35
+#define PRINTF 36
 #define STACKSIZE 1000
+
+
+typedef union 
+{
+	struct 
+	{
+		unsigned char low_byte;
+        unsigned char mlow_byte;
+        unsigned char mhigh_byte;
+        unsigned char high_byte;
+     }float_byte;
+          
+     float  value;
+}FLAOT_UNION;
 
 // Print the stack machine instruction at p[pc]
 
@@ -177,6 +192,8 @@ void printInstruction(int p[], int pc)
   case NEG:
         printf("NEG");
         break;
+  case PRINTF:
+    printf("PRINTF");
   default:
     printf("<unknown>");
     break;
@@ -231,6 +248,14 @@ int execcode(int p[], int s[], int iargs[], int iargc, int /* boolean */ trace)
   int sp = -1;   // Stack top pointer
   int pc = 0;    // Program counter: next instruction
   int hr = -1;
+
+  char temp[4];
+  unsigned short m=0;
+  float CurrentReceiveData=0;
+  void   *pf;
+  pf = &CurrentReceiveData;
+  unsigned char * px;
+
   for (;;)
   {
     if (trace)
@@ -431,6 +456,33 @@ int execcode(int p[], int s[], int iargs[], int iargc, int /* boolean */ trace)
       break;
 	  case NEG:
           s[sp] = -s[sp];
+          break;
+	  case PRINTF:
+          // FLAOT_UNION funion;
+          // for(m=0; m<4; m++)//int转byte
+          // {
+          //     temp[m+1]=(s[sp]>>(24-m*8));
+          // }
+          // printf("%d ", temp[0]);
+          // funion.low_byte = temp[0];
+          // printf("%d ", temp[1]);
+          // funion.mlow_byte = temp[1];
+          // printf("%d ", temp[2]);
+          // funion.mhigh_byte = temp[2];
+          // printf("%d\n", temp[3]);
+          // funion.high_byte = temp[3];
+          // printf("%d\n", s[sp]);
+
+          // // byte 2 float
+          // px = (unsigned char *)temp;
+          // for(m=0;m<4;m++)
+          // {
+          //   *((unsigned char *)pf+m)=*(px+m+1);
+          // }
+
+          // printf("%f ", &funion.float);
+          // // printf("%f ", (float)s[sp]);
+          printf("%f", s[sp]);
           break;
     default:
       printf("Illegal instruction %d at address %d\n", p[pc - 1], pc - 1);

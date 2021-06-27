@@ -1,12 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "vHc0Ov2R5NkpqAPeIrAAbrKYAYkz1u6Z+FAGinr2CKWFJoU2eaHVdu5vMpg7SPC6E7rjMeg8i7Fhs5VvfFFifA==",
+  "dgSpecHash": "nW6mduxAJcS7JMWHSX0e6HQbG4j3eHkzGTXLFMOz4w3HTdXr3sUojGQwi5slnNFoIq7s3fYTDM1Qs1qSTcgYMA==",
   "success": true,
-  "projectFilePath": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\forHim\\PrincipleOfCompilingFinal\\microc.fsproj",
+  "projectFilePath": "F:\\College\\1 学习\\2020-2021-2\\1 编译\\final\\forHim\\PrincipleOfCompilingFinal\\microcc.fsproj",
   "expectedPackageFiles": [
     "C:\\Users\\Shelby\\.nuget\\packages\\fsharp.core\\5.0.0\\fsharp.core.5.0.0.nupkg.sha512",
-    "C:\\Users\\Shelby\\.nuget\\packages\\fslexyacc\\10.2.0\\fslexyacc.10.2.0.nupkg.sha512",
-    "C:\\Users\\Shelby\\.nuget\\packages\\fslexyacc.runtime\\10.2.0\\fslexyacc.runtime.10.2.0.nupkg.sha512"
+    "C:\\Users\\Shelby\\.nuget\\packages\\fslexyacc\\10.0.0\\fslexyacc.10.0.0.nupkg.sha512",
+    "C:\\Users\\Shelby\\.nuget\\packages\\fslexyacc.runtime\\10.0.0\\fslexyacc.runtime.10.0.0.nupkg.sha512"
   ],
   "logs": []
 }

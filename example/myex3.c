@@ -6,12 +6,12 @@ void main(int n) {
     print i;
     for (j=0; j<n; j=j+1) {
       print j;
-      // if (j == 2) {
-      //   break;
-      // }
+      if (j == 2) {
+        break;
+      }
     }
-    // if (i == 2) {
-    //     break;
-    //   }
+    if (i == 2) {
+        break;
+      }
   } 
 }

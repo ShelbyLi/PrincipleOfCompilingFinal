@@ -418,6 +418,13 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (str
         let v = System.BitConverter.ToInt32(bytes, 0)
         addCST v C
     | Addr acc       -> cAccess acc varEnv funEnv lablist structEnv C
+    | Printf(ope, e1)  ->
+         cExpr e1.[0] varEnv funEnv lablist structEnv
+            (match ope with
+            | "%d"  -> PRINTI :: C
+            | "%c"  -> PRINTC :: C
+            | "%f"  -> PRINTF :: C
+            )
     | Prim1(ope, e1) ->
       cExpr e1 varEnv funEnv lablist structEnv
           (match ope with
@@ -457,7 +464,7 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (str
         let (jumpend, C1) = makeJump C
         let (lab2, C2) = addLabel (cExpr e varEnv funEnv lablist structEnv C1)
         cExpr e varEnv funEnv lablist structEnv (CSTI 0 :: LT :: IFNZRO lab2 :: 
-          cExpr e varEnv funEnv lablist structEnv (NEG::(addJump jumpend C2)))
+          cExpr e varEnv funEnv lablist structEnv (addJump jumpend (NEG::C2)))
             // cExpr e varEnv funEnv lablist structEnv (addJump jumpend (NEG :: C2)))
         //         @ cExpr e varEnv funEnv structEnv  @ [NEG] @ [Label lab2]
     
