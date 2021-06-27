@@ -377,6 +377,7 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (str
            | "!"      -> addNOT C
            | "printi" -> PRINTI :: C
            | "printc" -> PRINTC :: C
+           | "~" ->  BITNOT :: C
            | _        -> failwith "unknown primitive 1")
     | Prim2(ope, e1, e2) ->
       cExpr e1 varEnv funEnv lablist structEnv
@@ -393,6 +394,11 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (str
             | ">="  -> LT   :: addNOT C
             | ">"   -> SWAP :: LT :: C
             | "<="  -> SWAP :: LT :: addNOT C
+            | "&" ->  BITAND :: C
+            | "|" ->  BITOR :: C
+            | "^" ->  BITXOR :: C
+            | "<<" -> BITLEFT :: C
+            | ">>" -> BITRIGHT :: C
             | _     -> failwith "unknown primitive 2"))
     | Prim3(cond, e1, e2)    ->
         let (jumpend, C1) = makeJump C
