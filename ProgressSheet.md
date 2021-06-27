@@ -81,7 +81,7 @@ dotnet run -p microcc.fsproj .\example\myex1.c 3
 | `bin oct hex`                      | myex16.c | ✔       | ✔                                      | ✔          | TOFIX 只支持输入                            |
 | `bool`                             | myex17.c | ✔       | ✔                                      | ✔          |                                             |
 | 标识符定义 可`_`开头               | myex18.c | ✔       | ✔                                      | ✔          |                                             |
-| `try catch`                        | myex19.c |         | ✔                                      |            |                                             |
+| `try catch`                        | myex19.c |         | ✔                                      | ✔          |                                             |
 | `(**)`                             | myex20.c | ✔       | ✔                                      | ✔          |                                             |
 | `Max Min`                          | myex21.c | ✔       | ✔                                      |            |                                             |
 | `Abs`                              | myex21.c | ✔       | ✔                                      |            |                                             |

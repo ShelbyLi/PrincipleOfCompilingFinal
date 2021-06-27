@@ -297,6 +297,52 @@ let rec cStmt stmt (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (struc
       RET (snd varEnv - 1) :: deadcode C
     | Return (Some e) -> 
       cExpr e varEnv funEnv lablist structEnv (RET (snd varEnv) :: deadcode C)
+    | Try(stmt, catchs)  ->
+        let exns = [Exception "ArithmeticalExcption"]
+        let rec lookupExn e1 (es:excep list) exdepth=
+            match es with
+            | hd :: tail -> if e1 = hd then exdepth else lookupExn e1 tail exdepth+1
+            | []-> -1
+        let (labend, C1) = addLabel C
+        let lablist = labend :: lablist
+        let (env, fdepth) = varEnv
+        let varEnv = (env, fdepth+3*catchs.Length)
+        let (tryins, varEnv) = tryStmt stmt varEnv funEnv lablist structEnv []
+        let rec everycatch c  = 
+            match c with
+            | [Catch(exn, body)] -> 
+                let exnum = lookupExn exn exns 1
+                let (label, Ccatch) = addLabel( cStmt body varEnv funEnv lablist structEnv [])
+                let Ctry = PUSHHDLR (exnum ,label) :: tryins @ [POPHDLR]
+                (Ccatch,Ctry)
+            | Catch(exn, body) :: tr->
+                let exnum = lookupExn exn exns 1
+                let (C2, C3) = everycatch tr
+                let (label, Ccatch) = addLabel( cStmt body varEnv funEnv lablist structEnv C2)
+                let Ctry = PUSHHDLR (exnum,label) :: C3 @ [POPHDLR]
+                (Ccatch, Ctry)
+            | [] -> ([],tryins)
+        let (Ccatch, Ctry) = everycatch catchs
+        Ctry @ Ccatch @ C1
+
+
+and tryStmt tryBlock (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (structEnv : StructTypeEnv) (C : instr list) : instr list * VarEnv = 
+    match tryBlock with
+    | Block stmts ->
+        let rec pass1 stmts ((_, fdepth) as varEnv) = 
+            match stmts with
+            | []        -> ([], fdepth,varEnv)
+            | s1::sr    ->
+                let (_, varEnv1) as res1 = bStmtordec s1 varEnv structEnv
+                let (resr, fdepthr,varEnv2) = pass1 sr varEnv1
+                (res1 :: resr, fdepthr,varEnv2)
+        let (stmtsback, fdepthend,varEnv1) = pass1 stmts varEnv
+        let rec pass2 pairs C =
+            match pairs with
+            | [] -> C            
+            | (BDec code, varEnv)  :: sr -> code @ pass2 sr C
+            | (BStmt stmt, varEnv) :: sr -> cStmt stmt varEnv funEnv lablist structEnv (pass2 sr C)
+        (pass2 stmtsback (addINCSP(snd varEnv - fdepthend) C),varEnv1)
 
 and bStmtordec stmtOrDec varEnv (structEnv : StructTypeEnv) : bstmtordec * VarEnv =
     match stmtOrDec with 

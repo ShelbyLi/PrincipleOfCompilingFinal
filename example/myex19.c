@@ -1,7 +1,9 @@
 void main() {
     try{
-        int i = 0;
-        int n = 5;
+        int i;
+        i = 0;
+        int n;
+        n = 5;
         print i;
         // print 
         print n;
