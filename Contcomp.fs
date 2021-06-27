@@ -239,6 +239,10 @@ let rec cStmt stmt (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (struc
         let labbegin = newLabel()
         let C1 = cExpr e varEnv funEnv lablist structEnv (IFNZRO labbegin :: C)
         Label labbegin :: cStmt body varEnv funEnv lablist structEnv C1
+    | DoUntil(body, e) ->
+        let labbegin = newLabel()
+        let C1 = cExpr e varEnv funEnv lablist structEnv (IFZERO labbegin :: C)
+        Label labbegin :: cStmt body varEnv funEnv lablist structEnv C1
     | Expr e -> 
       cExpr e varEnv funEnv lablist structEnv (addINCSP -1 C) 
     | Block stmts -> 
