@@ -1,7 +1,8 @@
 void main() {
 	int a;
 	int b;
-	int c = 0b10;
+	int c;
+	c = 0b10;
 	// a = 1;
 	a = 0O12;
 	b = 0X1a;

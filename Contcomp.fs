@@ -219,6 +219,39 @@ let rec cStmt stmt (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (struc
       let (labelse, C2) = addLabel (cStmt stmt2 varEnv funEnv lablist structEnv C1)
       cExpr e varEnv funEnv lablist structEnv (IFZERO labelse 
        :: cStmt stmt1 varEnv funEnv lablist structEnv (addJump jumpend C2))
+    | Switch (e, body) ->
+        // let eValueInstr = cExpr e varEnv funEnv structEnv
+        // let lab = newLabel()
+        // let rec getcode e body = 
+        //     match body with
+        //     | []          -> [INCSP 0]
+        //     | Case (e1, body1):: tail -> 
+        //       let e1ValueInstr = cExpr e1 varEnv funEnv structEnv
+        //       let sublab = newLabel()
+        //       eValueInstr @ e1ValueInstr @ [SUB] @ [IFNZRO sublab] @ cStmt body1 varEnv funEnv structEnv @ [GOTO lab] @ [Label sublab] 
+        //            @ getcode e tail
+        //     | Default body1 :: tail->
+        //         cStmt body1 varEnv funEnv structEnv
+      
+        // let result = getcode e body @ [Label lab]
+        // result
+        let (labend, C1) = addLabel C
+        let lablist = labend :: lablist
+        let rec getcode c  = 
+            match c with
+            | Case(cond,body) :: tr ->
+                let (labnextbody, labnext, C2) = getcode tr
+                let (label, C3) = addLabel(cStmt body varEnv funEnv lablist structEnv (addGOTO labend C2))
+                let (label2, C4) = addLabel( cExpr (Prim2 ("==", e, cond)) varEnv funEnv lablist structEnv (IFZERO labnext :: C3))
+                (label,label2, C4)
+            | Default( body ) :: tr -> 
+                let (labnextbody,labnext,C2) = getcode tr
+                let (label, C3) = addLabel(cStmt body varEnv funEnv lablist structEnv (addGOTO labend C2))
+                let (label2, C4) = addLabel(cExpr (Prim2 ("==", e, e)) varEnv funEnv lablist structEnv (IFZERO labnext :: C3))
+                (label,label2,C4)
+            | [] -> (labend, labend, C1)
+        let (label, label2, C2) = getcode body
+        C2
     | While(e, body) ->
       let labbegin = newLabel()
       let (jumptest, C1) = 

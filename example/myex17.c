@@ -1,6 +1,8 @@
 void main() {
-	bool b = true;
-	bool c = false;
+	bool b;
+	b = true;
+	bool c;
+	c = false;
 
 	print b;
 	print c;
