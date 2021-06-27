@@ -7,9 +7,9 @@ void main(int n ) {
         do {
             print j;
             j = j+1;
-            if (j == 3) {
-                break;
-            }
+            // if (j == 3) {
+            //     break;
+            // }
         } while (j < n);
         print i;
         i = i+1;

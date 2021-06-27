@@ -235,7 +235,10 @@ let rec cStmt stmt (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (struc
         let C3 = Label labope :: cExpr opera varEnv funEnv lablist structEnv (addINCSP -1 C2)
         let C4 = cStmt body varEnv funEnv lablist structEnv C3    
         cExpr dec varEnv funEnv lablist structEnv (addINCSP -1 (addJump jumptest  (Label labbegin :: C4) ) ) //dec Label: body  opera  testjumpToBegin 指令的顺序  
-    
+    | DoWhile(body, e) ->
+        let labbegin = newLabel()
+        let C1 = cExpr e varEnv funEnv lablist structEnv (IFNZRO labbegin :: C)
+        Label labbegin :: cStmt body varEnv funEnv lablist structEnv C1
     | Expr e -> 
       cExpr e varEnv funEnv lablist structEnv (addINCSP -1 C) 
     | Block stmts -> 
