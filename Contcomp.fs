@@ -369,20 +369,14 @@ and bStmtordec stmtOrDec varEnv (structEnv : StructTypeEnv) : bstmtordec * VarEn
 
 and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (structEnv : StructTypeEnv) (C : instr list) : instr list =
     match e with
-    // | PreInc acc -> 
-    //     let ass = Assign (acc, Prim2("+", Access acc, (CSTI 1)))
-    //     let C1 = cExpr ass varEnv funEnv lablist structEnv C
-    //     CSTI 1 :: ADD :: (addINCSP -1 C1)
-    // | PreDec acc -> 
-    //     let ass = Assign (acc,Prim2("-", Access acc, e))
-    //     let C1 = cExpr ass varEnv funEnv lablist structEnv C
-    //     CSTI 1 :: SUB :: (addINCSP -1 C1)
-    // | NextInc acc ->
-    //     let ass = Assign (acc,Prim2("+", Access acc, e))
-    //     cExpr ass varEnv funEnv lablist structEnv (addINCSP -1 C)
-    // | NextDec acc ->
-    //     let ass = Assign (acc,Prim2("-",Access acc, e))
-    //     cExpr ass varEnv funEnv lablist structEnv (addINCSP -1 C)
+    | PreInc acc -> 
+        cAccess acc varEnv funEnv lablist structEnv (DUP :: LDI :: CSTI 1 :: ADD :: STI :: C)
+    | PreDec acc -> 
+        cAccess acc varEnv funEnv lablist structEnv (DUP :: LDI :: CSTI 1 :: SUB :: STI :: C)
+    | NextInc acc ->
+        cAccess acc varEnv funEnv lablist structEnv (DUP :: LDI :: SWAP :: DUP :: LDI :: CSTI 1 :: ADD :: STI :: INCSP -1 :: C)
+    | NextDec acc ->
+        cAccess acc varEnv funEnv lablist structEnv (DUP :: LDI :: SWAP :: DUP :: LDI :: CSTI 1 :: SUB :: STI :: INCSP -1 :: C)
     | Access acc     -> cAccess acc varEnv funEnv lablist structEnv (LDI :: C)
     | Assign(acc, e) -> cAccess acc varEnv funEnv lablist structEnv (cExpr e varEnv funEnv lablist structEnv (STI :: C))
     | OpAssign (op, acc, e) ->
