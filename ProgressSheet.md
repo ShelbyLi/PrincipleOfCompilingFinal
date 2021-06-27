@@ -58,14 +58,14 @@ dotnet run -p microcc.fsproj .\example\myex1.c 3
 .\machine.exe .\example\myex1.out 3
 ```
 
-
+##### 进度
 
 | 实现                               | 测试     | Interp  | Comp                                   | ContComp   | 备注                                        |
 | ---------------------------------- | -------- | ------- | -------------------------------------- | ---------- | ------------------------------------------- |
-| `++e; --e`                         | myex1.c  | ✔       | ✔                                      |            | Exercise8.3                                 |
+| `++e; --e`                         | myex1.c  | ✔       | ✔                                      | ✔          | Exercise8.3                                 |
 | `e1?e2:e3`                         | myex2.c  | ✔       | ✔                                      | ✔          | Exercise8.5                                 |
 | `for (i=0; i<n; ++i)`              | myex3.c  | ✔       | ✔                                      | ✔          |                                             |
-| `e++; e--`                         | myex1.c  | ✔       | ✔                                      |            |                                             |
+| `e++; e--`                         | myex1.c  | ✔       | ✔                                      | ✔          |                                             |
 | `+=; -=; *=; /=; %=`               | myex4.c  | ✔       | ✔                                      | ✔          |                                             |
 | `do while`                         | myex5.c  | ✔       | ✔                                      | ✔          |                                             |
 | `switch case` (无break)            | myex6.c  | ✔       | ✔                                      | ✔          |                                             |
@@ -91,9 +91,25 @@ dotnet run -p microcc.fsproj .\example\myex1.c 3
 |                                    |          |         |                                        |            |                                             |
 |                                    |          |         |                                        |            |                                             |
 |                                    |          |         |                                        |            |                                             |
-| 中间代码生成 AST                   |          |         |                                        |            |                                             |
+|                                    |          |         |                                        |            |                                             |
 |                                    |          |         |                                        |            |                                             |
 |                                    |          |         |                                        |            |                                             |
 
 
+
+
+
+##### 优化编译器查看中间过程
+
+```shell
+dotnet fsi
+#r "nuget: FsLexYacc";;
+
+#load "Absyn.fs"  "CPar.fs" "CLex.fs" "Debug.fs" "Parse.fs" "Machine.fs" "Backend.fs" "Contcomp.fs" "ParseAndContcomp.fs";;
+
+open ParseAndContcomp;;
+
+fromFile "example\myex1.c";;
+contCompileToFile (fromFile "example\myex1.c") "myex1.out";;
+```
 

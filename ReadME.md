@@ -272,4 +272,5 @@ dotnet  build -t:ccrunx86 microc.fsproj
 #### x86 bugs
 
 - *(p + 2) 指针运算不支持
+
 # PrincipleOfCompilingFinal

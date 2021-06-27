@@ -447,10 +447,19 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (str
             | "<<" -> BITLEFT :: C
             | ">>" -> BITRIGHT :: C
             | _     -> failwith "unknown primitive 2"))
-    | Prim3(cond, e1, e2)    ->
+    | Prim3(e1, e2, e3)    ->
         let (jumpend, C1) = makeJump C
-        let (labelse, C2) = addLabel (cExpr e2 varEnv funEnv lablist structEnv C1)
-        cExpr cond varEnv funEnv lablist structEnv (IFZERO labelse :: cExpr e1 varEnv funEnv lablist structEnv (addJump jumpend C2))
+        let (labelse, C2) = addLabel (cExpr e3 varEnv funEnv lablist structEnv C1)
+        cExpr e1 varEnv funEnv lablist structEnv (IFZERO labelse :: cExpr e2 varEnv funEnv lablist structEnv (addJump jumpend C2))
+    | Abs(e) ->
+        // let lab1 = newLabel()
+        // let lab2 = newLabel()
+        let (jumpend, C1) = makeJump C
+        let (lab2, C2) = addLabel (cExpr e varEnv funEnv lablist structEnv C1)
+        cExpr e varEnv funEnv lablist structEnv (CSTI 0 :: LT :: IFNZRO lab2 :: 
+          cExpr e varEnv funEnv lablist structEnv (NEG::(addJump jumpend C2)))
+            // cExpr e varEnv funEnv lablist structEnv (addJump jumpend (NEG :: C2)))
+        //         @ cExpr e varEnv funEnv structEnv  @ [NEG] @ [Label lab2]
     
     | Andalso(e1, e2) ->
       match C with
