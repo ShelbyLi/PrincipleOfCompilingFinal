@@ -306,6 +306,36 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (str
     //     cExpr ass varEnv funEnv lablist structEnv (addINCSP -1 C)
     | Access acc     -> cAccess acc varEnv funEnv lablist structEnv (LDI :: C)
     | Assign(acc, e) -> cAccess acc varEnv funEnv lablist structEnv (cExpr e varEnv funEnv lablist structEnv (STI :: C))
+    | OpAssign (op, acc, e) ->
+    // cAccess acc varEnv funEnv structEnv
+    //     @ [DUP] @ [LDI] @ cExpr e varEnv funEnv structEnv
+    //         @ (match op with
+    //             | "+" -> [ADD]
+    //             | "-" -> [SUB]
+    //             | "*" -> [MUL]
+    //             | "/" -> [DIV]
+    //             | "%" -> [MOD]
+    //             | _ -> failwith "could not fine operation"
+    //         )  @ [STI]
+        cExpr e varEnv funEnv lablist structEnv
+            (match op with
+            | "+" -> 
+                let ass = Assign (acc,Prim2("+",Access acc, e))
+                cExpr ass varEnv funEnv lablist structEnv (addINCSP -1 C)
+            | "-" ->
+                let ass = Assign (acc,Prim2("-",Access acc, e))
+                cExpr ass varEnv funEnv lablist structEnv (addINCSP -1 C)
+            | "*" -> 
+                let ass = Assign (acc,Prim2("*",Access acc, e))
+                cExpr ass varEnv funEnv lablist structEnv (addINCSP -1 C)
+            | "/" ->
+                let ass = Assign (acc,Prim2("/",Access acc, e))
+                cExpr ass varEnv funEnv lablist structEnv (addINCSP -1 C)
+            | "%" ->
+                let ass = Assign (acc,Prim2("%",Access acc, e))
+                cExpr ass varEnv funEnv lablist structEnv (addINCSP -1 C)
+            | _         -> failwith "Error: unknown unary operator")
+
     | CstI i         -> addCST i C
     | Addr acc       -> cAccess acc varEnv funEnv lablist structEnv C
     | Prim1(ope, e1) ->
