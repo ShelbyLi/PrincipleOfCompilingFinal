@@ -224,6 +224,18 @@ let rec cStmt stmt (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (struc
       let (jumptest, C1) = 
            makeJump (cExpr e varEnv funEnv lablist structEnv (IFNZRO labbegin :: C))
       addJump jumptest (Label labbegin :: cStmt body varEnv funEnv lablist structEnv C1)
+    | For(dec, e, opera,body) ->
+        let labend   = newLabel()
+        let labbegin = newLabel()
+        let labope   = newLabel()
+        let lablist = labend :: labope :: lablist
+        let Cend = Label labend :: C
+        let (jumptest, C2) =                                                
+            makeJump (cExpr e varEnv funEnv lablist structEnv (IFNZRO labbegin :: Cend)) 
+        let C3 = Label labope :: cExpr opera varEnv funEnv lablist structEnv (addINCSP -1 C2)
+        let C4 = cStmt body varEnv funEnv lablist structEnv C3    
+        cExpr dec varEnv funEnv lablist structEnv (addINCSP -1 (addJump jumptest  (Label labbegin :: C4) ) ) //dec Label: body  opera  testjumpToBegin 指令的顺序  
+    
     | Expr e -> 
       cExpr e varEnv funEnv lablist structEnv (addINCSP -1 C) 
     | Block stmts -> 
