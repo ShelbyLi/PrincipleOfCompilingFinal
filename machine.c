@@ -440,7 +440,6 @@ int execcode(int p[], int s[], int iargs[], int iargc, int /* boolean */ trace)
       while (hr != -1 && s[hr] != p[pc] )
       {
           hr = s[hr+2]; //find exn address
-          // System.out.println("hr:"+hr+" exception:"+new WIntType(program.get(pc)).getValue());
           printf("hr: %d exception: %d\n", hr, p[pc]);
       }
           
@@ -449,7 +448,6 @@ int execcode(int p[], int s[], int iargs[], int iargc, int /* boolean */ trace)
           pc = s[hr+1];
           hr = s[hr+2]; // with current handler being hr
       } else {
-          // System.out.print(hr+"not find exception");
           printf("%d not find exception\n");
           return sp;
       }
@@ -482,7 +480,7 @@ int execcode(int p[], int s[], int iargs[], int iargc, int /* boolean */ trace)
 
           // printf("%f ", &funion.float);
           // // printf("%f ", (float)s[sp]);
-          printf("%f", s[sp]);
+          printf("%f", (float *)(s[sp]));
           break;
     default:
       printf("Illegal instruction %d at address %d\n", p[pc - 1], pc - 1);

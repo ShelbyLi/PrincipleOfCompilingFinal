@@ -12,12 +12,15 @@ void main() {
   struct test t2;
   t.i = 3;
   t.c = 'b';
-  t2.i = 7;
+  // t2.i = 7;
   // t.a[0] = 5;
   // t.s = "abcc";
-  printf("%d\n", t.i);
-  printf("%c\n", t.c);
-  printf("%d\n", t2.i);
+  print t.i;
+  print t.c;
+  // print t2.i;
+  // printf("%d\n", t.i);
+  // printf("%c\n", t.c);
+  // printf("%d\n", t2.i);
   // printf("%s\n", t.s);
 
 }

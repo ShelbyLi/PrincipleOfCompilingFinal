@@ -1,7 +1,7 @@
 LDARGS 1
-CALL (1, "L1_main")
+CALL (1, "L1")
 STOP
-FLabel (1, "L1_main")
+FLabel (1, "L1")
 INCSP 1
 GETBP
 OFFSET 1
@@ -29,7 +29,6 @@ CSTI 1
 ADD
 STI
 INCSP -1
-GOTO "L3"
 INCSP 0
 GOTO "L6"
 Label "L5"
@@ -41,6 +40,7 @@ ADD
 LDI
 PRINTI
 INCSP -1
+GOTO "L4"
 GETBP
 OFFSET 1
 ADD

@@ -4,10 +4,10 @@ void main(int n) {
   while (i < 3) { 
     if (i == 1) {
         i = i + 1;
-        continue;
+        // continue;
     }
     print i; 
-    // break;
+    break;
 
     i=i+1;
   } 

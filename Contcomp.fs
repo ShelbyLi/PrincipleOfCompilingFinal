@@ -351,6 +351,10 @@ and bStmtordec stmtOrDec varEnv (structEnv : StructTypeEnv) : bstmtordec * VarEn
     | Dec (typ, x) ->
       let (varEnv1, code) = allocate Locvar (typ, x) varEnv structEnv
       (BDec code, varEnv1)
+    | DecAndAssign (typ, x, e) ->
+        let (varEnv1, code) = allocate Locvar (typ, x) varEnv structEnv
+        (BDec (cAccess (AccVar(x)) varEnv1 [] [] structEnv (cExpr e varEnv1 [] [] structEnv (STI :: (addINCSP -1 code)))), varEnv1)
+
 
 (* Compiling micro-C expressions: 
 

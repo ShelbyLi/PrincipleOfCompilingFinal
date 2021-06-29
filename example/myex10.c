@@ -1,8 +1,10 @@
+int a = 1;
 void main(int n) { 
   int i=n;
   // int i;
   // i = 0;
   print i;
-  // g = n + 1;
+  int g = i + 1;
   print g;
+  print a + g;
 }
