@@ -202,6 +202,15 @@ let bindParams paras (env, fdepth) : VarEnv =
 //             addv decr varEnv ((f, (newLabel(), tyOpt, xs)) :: funEnv)
 //     addv topdecs ([], 0) []
     
+
+let rec headlab labs = 
+    match labs with
+        | lab :: tr -> lab
+        | []        -> failwith "Error: unknown break"
+let rec dellab labs =
+    match labs with
+        | lab :: tr ->   tr
+        | []        ->   []
 (* ------------------------------------------------------------------- *)
 
 (* Compiling micro-C statements:
@@ -253,10 +262,16 @@ let rec cStmt stmt (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (struc
         let (label, label2, C2) = getcode body
         C2
     | While(e, body) ->
-      let labbegin = newLabel()
-      let (jumptest, C1) = 
-           makeJump (cExpr e varEnv funEnv lablist structEnv (IFNZRO labbegin :: C))
-      addJump jumptest (Label labbegin :: cStmt body varEnv funEnv lablist structEnv C1)
+    //   let labbegin = newLabel()
+    //   let (jumptest, C1) = 
+    //        makeJump (cExpr e varEnv funEnv lablist structEnv (IFNZRO labbegin :: C))
+    //   addJump jumptest (Label labbegin :: cStmt body varEnv funEnv lablist structEnv C1)
+        let labbegin = newLabel()
+        let (labend,Cend)   = addLabel C
+        let lablist = labend :: labbegin :: lablist
+        let (jumptest, C1) = 
+            makeJump (cExpr e varEnv funEnv lablist structEnv (IFNZRO labbegin :: Cend))
+        addJump jumptest (Label labbegin :: cStmt body varEnv funEnv lablist structEnv C1)
     | For(dec, e, opera,body) ->
         let labend   = newLabel()
         let labbegin = newLabel()
@@ -297,6 +312,14 @@ let rec cStmt stmt (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (struc
       RET (snd varEnv - 1) :: deadcode C
     | Return (Some e) -> 
       cExpr e varEnv funEnv lablist structEnv (RET (snd varEnv) :: deadcode C)
+    | Break ->
+        let labend = headlab lablist
+        addGOTO labend C
+     //如果要编译的stmt是Continue
+    | Continue ->
+        let lablist   = dellab lablist
+        let labbegin = headlab lablist
+        addGOTO labbegin C
     | Try(stmt, catchs)  ->
         let exns = [Exception "ArithmeticalExcption"]
         let rec lookupExn e1 (es:excep list) exdepth=

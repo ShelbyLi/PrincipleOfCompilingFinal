@@ -71,7 +71,7 @@ dotnet run -p microcc.fsproj .\example\myex1.c 3
 | `switch case` (无break)            | myex6.c  | ✔              | ✔                                      | ✔          |                                             |
 | `printf` (未检查类型)              | myex7.c  | ✔              |                                        |            |                                             |
 | `char`                             | myex8.c  | ✔              | ✔                                      | ✔          |                                             |
-| `break continue`                   | myex9.c  |                | ✔                                      |            | 编译continue for i++不执行                  |
+| `break continue`                   | myex9.c  |                | ✔                                      | ✔          | 编译continue for i++不执行                  |
 | `int i=0`                          | myex10.c | ✔ (全局未实现) | ✔ (全局未实现)                         | ✔          |                                             |
 | `float`                            | myex11.c | ✔              | ✔                                      | ✔          |                                             |
 | `String` 及相应的`printf`          | myex12.c | ✔              |                                        |            | 长度固定128                                 |
@@ -83,8 +83,8 @@ dotnet run -p microcc.fsproj .\example\myex1.c 3
 | 标识符定义 可`_`开头               | myex18.c | ✔              | ✔                                      | ✔          |                                             |
 | `try catch`                        | myex19.c |                | ✔                                      | ✔          |                                             |
 | `(**)`                             | myex20.c | ✔              | ✔                                      | ✔          |                                             |
-| `Max Min`                          | myex21.c | ✔              | ✔                                      |            |                                             |
-| `Abs`                              | myex21.c | ✔              | ✔                                      |            |                                             |
+| `Max Min`                          | myex21.c | ✔              | ✔                                      | ✔          |                                             |
+| `Abs`                              | myex21.c | ✔              | ✔                                      | ✔          |                                             |
 | `do until`                         | myex22.c | ✔              | ✔                                      | ✔          |                                             |
 | return  静态作用域(本来有)         | myex23.c | ✔              | ✔ (本来有)                             | ✔ (本来有) |                                             |
 |                                    |          |                |                                        |            |                                             |
