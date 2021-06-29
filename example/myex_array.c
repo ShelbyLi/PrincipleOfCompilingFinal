@@ -1,4 +1,4 @@
-int main(){
+void main(){
     int i;
     int a[10];
     char c[5];
