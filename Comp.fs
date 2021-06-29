@@ -529,7 +529,7 @@ and cExpr (e: expr) (varEnv: VarEnv) (funEnv: FunEnv) (structEnv : StructTypeEnv
         let lab1 = newLabel()
         let lab2 = newLabel()
         cExpr e varEnv funEnv structEnv  @ [CSTI 0] @ [LT] @ [IFNZRO lab1] 
-            @ cExpr e varEnv funEnv structEnv @ [GOTO lab2;Label lab1] 
+            @ cExpr e varEnv funEnv structEnv @ [GOTO lab2; Label lab1] 
                 @ cExpr e varEnv funEnv structEnv  @ [NEG] @ [Label lab2]
     
     | Andalso (e1, e2) ->

@@ -466,7 +466,7 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (str
                 (addJump jumpend C2))  // addjump: 前面加goto
     | Max(e1, e2) ->
         let (jumpend, C1) = makeJump C  // 最后加labend
-        let (labtrue, C2) = addLabel (cExpr e2 varEnv funEnv lablist structEnv C1) // 
+        let (labtrue, C2) = addLabel (cExpr e2 varEnv funEnv lablist structEnv C1)
 
         cExpr e1 varEnv funEnv lablist structEnv (
             cExpr e2 varEnv funEnv lablist structEnv 
@@ -474,21 +474,27 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (lablist : LabEnv) (str
                     (addJump jumpend C2)))
     | Min(e1, e2) ->
         let (jumpend, C1) = makeJump C  // 最后加labend
-        let (labtrue, C2) = addLabel (cExpr e1 varEnv funEnv lablist structEnv C1) // 
+        let (labtrue, C2) = addLabel (cExpr e1 varEnv funEnv lablist structEnv C1)
 
         cExpr e1 varEnv funEnv lablist structEnv (
             cExpr e2 varEnv funEnv lablist structEnv 
                 (LT :: IFNZRO labtrue :: cExpr e2 varEnv funEnv lablist structEnv 
                     (addJump jumpend C2)))
     | Abs(e) ->
-        // let lab1 = newLabel()
-        // let lab2 = newLabel()
         let (jumpend, C1) = makeJump C
-        let (lab2, C2) = addLabel (cExpr e varEnv funEnv lablist structEnv C1)
-        cExpr e varEnv funEnv lablist structEnv (CSTI 0 :: LT :: IFNZRO lab2 :: 
-          cExpr e varEnv funEnv lablist structEnv (addJump jumpend (NEG::C2)))
-            // cExpr e varEnv funEnv lablist structEnv (addJump jumpend (NEG :: C2)))
-        //         @ cExpr e varEnv funEnv structEnv  @ [NEG] @ [Label lab2]
+        let (labtrue, C2) = addLabel (cExpr e varEnv funEnv lablist structEnv C1)
+        cExpr e varEnv funEnv lablist structEnv 
+            (CSTI 0 :: LT :: IFNZRO labtrue :: cExpr e varEnv funEnv lablist structEnv 
+                (addJump jumpend (C2 @ [NEG])))
+
+        // // let lab1 = newLabel()
+        // // let lab2 = newLabel()
+        // let (jumpend, C1) = makeJump C
+        // let (lab2, C2) = addLabel (cExpr e varEnv funEnv lablist structEnv C1)
+        // cExpr e varEnv funEnv lablist structEnv (CSTI 0 :: LT :: IFNZRO lab2 :: 
+        //   cExpr e varEnv funEnv lablist structEnv (addJump jumpend (NEG::C2)))
+        //     // cExpr e varEnv funEnv lablist structEnv (addJump jumpend (NEG :: C2)))
+        // //         @ cExpr e varEnv funEnv structEnv  @ [NEG] @ [Label lab2]
     
     | Andalso(e1, e2) ->
       match C with
