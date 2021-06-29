@@ -60,40 +60,40 @@ dotnet run -p microcc.fsproj .\example\myex1.c 3
 
 ##### 进度
 
-| 实现                               | 测试     | Interp  | Comp                                   | ContComp   | 备注                                        |
-| ---------------------------------- | -------- | ------- | -------------------------------------- | ---------- | ------------------------------------------- |
-| `++e; --e`                         | myex1.c  | ✔       | ✔                                      | ✔          | Exercise8.3                                 |
-| `e1?e2:e3`                         | myex2.c  | ✔       | ✔                                      | ✔          | Exercise8.5                                 |
-| `for (i=0; i<n; ++i)`              | myex3.c  | ✔       | ✔                                      | ✔          |                                             |
-| `e++; e--`                         | myex1.c  | ✔       | ✔                                      | ✔          |                                             |
-| `+=; -=; *=; /=; %=`               | myex4.c  | ✔       | ✔                                      | ✔          |                                             |
-| `do while`                         | myex5.c  | ✔       | ✔                                      | ✔          |                                             |
-| `switch case` (无break)            | myex6.c  | ✔       | ✔                                      | ✔          |                                             |
-| `printf` (未检查类型)              | myex7.c  | ✔       |                                        |            |                                             |
-| `char`                             | myex8.c  | ✔       | ✔                                      | ✔          |                                             |
-| `break continue`                   | myex9.c  |         | ✔                                      |            | 编译continue for i++不执行                  |
-| `int i=0` (全局未实现)             | myex10.c | ✔       | ✔                                      |            |                                             |
-| `float`                            | myex11.c | ✔       | ✔                                      | ✔          |                                             |
-| `String` 及相应的`printf`          | myex12.c | ✔       |                                        |            | 长度固定128                                 |
-| `int(x) char(x)`                   | myex13.c | ✔       | 要判断返回的值大小再决定类型<br />how? |            | 判断变量的类型:<br />>100000000 判断为float |
-| `struct`(string array不能做member) | myex14.c | ✔ TOFIX | ✔                                      | ✔          |                                             |
-| `&; |; <<; >>; ^; ~`               | myex15.c | ✔       | ✔                                      | ✔          |                                             |
-| `bin oct hex`                      | myex16.c | ✔       | ✔                                      | ✔          | TOFIX 只支持输入                            |
-| `bool`                             | myex17.c | ✔       | ✔                                      | ✔          |                                             |
-| 标识符定义 可`_`开头               | myex18.c | ✔       | ✔                                      | ✔          |                                             |
-| `try catch`                        | myex19.c |         | ✔                                      | ✔          |                                             |
-| `(**)`                             | myex20.c | ✔       | ✔                                      | ✔          |                                             |
-| `Max Min`                          | myex21.c | ✔       | ✔                                      |            |                                             |
-| `Abs`                              | myex21.c | ✔       | ✔                                      |            |                                             |
-| `do until`                         | myex22.c | ✔       | ✔                                      | ✔          |                                             |
-| return  静态作用域(本来有)         | myex23.c | ✔       | ✔ (本来有)                             | ✔ (本来有) |                                             |
-|                                    |          |         |                                        |            |                                             |
-|                                    |          |         |                                        |            |                                             |
-|                                    |          |         |                                        |            |                                             |
-|                                    |          |         |                                        |            |                                             |
-|                                    |          |         |                                        |            |                                             |
-|                                    |          |         |                                        |            |                                             |
-|                                    |          |         |                                        |            |                                             |
+| 实现                               | 测试     | Interp         | Comp                                   | ContComp   | 备注                                        |
+| ---------------------------------- | -------- | -------------- | -------------------------------------- | ---------- | ------------------------------------------- |
+| `++e; --e`                         | myex1.c  | ✔              | ✔                                      | ✔          | Exercise8.3                                 |
+| `e1?e2:e3`                         | myex2.c  | ✔              | ✔                                      | ✔          | Exercise8.5                                 |
+| `for (i=0; i<n; ++i)`              | myex3.c  | ✔              | ✔                                      | ✔          |                                             |
+| `e++; e--`                         | myex1.c  | ✔              | ✔                                      | ✔          |                                             |
+| `+=; -=; *=; /=; %=`               | myex4.c  | ✔              | ✔                                      | ✔          |                                             |
+| `do while`                         | myex5.c  | ✔              | ✔                                      | ✔          |                                             |
+| `switch case` (无break)            | myex6.c  | ✔              | ✔                                      | ✔          |                                             |
+| `printf` (未检查类型)              | myex7.c  | ✔              |                                        |            |                                             |
+| `char`                             | myex8.c  | ✔              | ✔                                      | ✔          |                                             |
+| `break continue`                   | myex9.c  |                | ✔                                      |            | 编译continue for i++不执行                  |
+| `int i=0`                          | myex10.c | ✔ (全局未实现) | ✔ (全局未实现)                         | ✔          |                                             |
+| `float`                            | myex11.c | ✔              | ✔                                      | ✔          |                                             |
+| `String` 及相应的`printf`          | myex12.c | ✔              |                                        |            | 长度固定128                                 |
+| `int(x) char(x)`                   | myex13.c | ✔              | 要判断返回的值大小再决定类型<br />how? |            | 判断变量的类型:<br />>100000000 判断为float |
+| `struct`(string array不能做member) | myex14.c | ✔ TOFIX        | ✔                                      | ✔          |                                             |
+| `&; |; <<; >>; ^; ~`               | myex15.c | ✔              | ✔                                      | ✔          |                                             |
+| `bin oct hex`                      | myex16.c | ✔              | ✔                                      | ✔          | TOFIX 只支持输入                            |
+| `bool`                             | myex17.c | ✔              | ✔                                      | ✔          |                                             |
+| 标识符定义 可`_`开头               | myex18.c | ✔              | ✔                                      | ✔          |                                             |
+| `try catch`                        | myex19.c |                | ✔                                      | ✔          |                                             |
+| `(**)`                             | myex20.c | ✔              | ✔                                      | ✔          |                                             |
+| `Max Min`                          | myex21.c | ✔              | ✔                                      |            |                                             |
+| `Abs`                              | myex21.c | ✔              | ✔                                      |            |                                             |
+| `do until`                         | myex22.c | ✔              | ✔                                      | ✔          |                                             |
+| return  静态作用域(本来有)         | myex23.c | ✔              | ✔ (本来有)                             | ✔ (本来有) |                                             |
+|                                    |          |                |                                        |            |                                             |
+|                                    |          |                |                                        |            |                                             |
+|                                    |          |                |                                        |            |                                             |
+|                                    |          |                |                                        |            |                                             |
+|                                    |          |                |                                        |            |                                             |
+|                                    |          |                |                                        |            |                                             |
+|                                    |          |                |                                        |            |                                             |
 
 
 

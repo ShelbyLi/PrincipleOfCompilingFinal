@@ -515,15 +515,16 @@ and cExpr (e: expr) (varEnv: VarEnv) (funEnv: FunEnv) (structEnv : StructTypeEnv
         cExpr e1 varEnv funEnv structEnv 
             @ cExpr e2 varEnv funEnv structEnv @ [LT] @ [IFNZRO labtrue]
                 @ cExpr e1 varEnv funEnv structEnv 
-                    @ [GOTO labend;Label labtrue] 
+                    @ [GOTO labend; Label labtrue] 
                         @ cExpr e2 varEnv funEnv structEnv @ [Label labend]
     | Min(e1, e2) ->
         let labtrue = newLabel()
         let labend = newLabel()
         cExpr e1 varEnv funEnv structEnv 
             @ cExpr e2 varEnv funEnv structEnv @ [LT] @ [IFNZRO labtrue]
-                @ cExpr e2 varEnv funEnv structEnv @ [GOTO labend;Label labtrue] 
-                    @ cExpr e1 varEnv funEnv structEnv @ [Label labend]
+                @ cExpr e2 varEnv funEnv structEnv 
+                    @ [GOTO labend; Label labtrue] 
+                        @ cExpr e1 varEnv funEnv structEnv @ [Label labend]
     | Abs(e) ->
         let lab1 = newLabel()
         let lab2 = newLabel()
